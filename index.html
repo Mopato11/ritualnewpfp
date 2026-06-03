@@ -15,7 +15,8 @@
             --bg-color: #f3edd7;     /* الخلفية الكريمية الدافئة */
             --card-bg: #e6dfca;      /* لون البطاقة الداخلي */
             --dark-color: #121212;   /* الأسود الغامق للحدود */
-            --ritual-green: #084c33; /* أخضر ريتشوال الغامق */
+            --ritual-green: #084c33; /* أخضر ريتشوال الغامق المميز */
+            --fire-glow: rgba(12, 217, 126, 0.4); /* توهج النار الخضراء */
         }
 
         * {
@@ -32,6 +33,57 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* تأثير الشعلات الخضراء المتحركة على جوانب الشاشة */
+        .green-flame-container {
+            position: fixed;
+            bottom: 40px;
+            width: 80px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            pointer-events: none; /* لكي لا تعيق الضغط على العناصر */
+            z-index: 0;
+        }
+        
+        .flame-left { left: 5%; }
+        .flame-right { right: 5%; }
+
+        /* هيكل الشعلة المتحركة بـ CSS */
+        .flame {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(-45deg, #0cd97e, #084c33);
+            border-radius: 0 100% 100% 100%;
+            transform: rotate(-135deg);
+            animation: burn 1.5s ease-in-out infinite alternate;
+            box-shadow: 0px 0px 30px 15px var(--fire-glow);
+            filter: blur(1px);
+        }
+
+        .flame-particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #0cd97e;
+            border-radius: 50%;
+            bottom: 30px;
+            animation: floatUp 2s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes burn {
+            0% { transform: rotate(-135deg) scale(1); border-radius: 0 100% 100% 100%; }
+            100% { transform: rotate(-135deg) scale(1.15); border-radius: 10% 100% 80% 100%; box-shadow: 0px 0px 40px 20px var(--fire-glow); }
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 0.8; }
+            100% { transform: translateY(-80px) scale(0.3); opacity: 0; }
         }
 
         /* الهيدر العلوي */
@@ -42,27 +94,30 @@
             justify-content: space-between;
             align-items: center;
             padding: 30px 20px;
+            z-index: 10;
         }
 
         .brand-container {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
         }
 
         .ritual-official-logo {
-            width: 45px;
-            height: 45px;
+            width: 48px;
+            height: 48px;
             border: 2px solid var(--dark-color);
             border-radius: 50%;
             object-fit: cover;
             box-shadow: 2px 2px 0px var(--dark-color);
         }
 
+        /* تكبير كلمة Ritual وجعل لونها أخضر */
         .brand-name {
             font-weight: 800;
-            font-size: 24px;
-            letter-spacing: -0.5px;
+            font-size: 32px; /* تم تكبير الخط */
+            letter-spacing: -0.8px;
+            color: var(--ritual-green); /* اللون الأخضر المميز */
         }
 
         .wallet-pill-btn {
@@ -93,6 +148,7 @@
             margin-bottom: 50px;
             box-shadow: 8px 8px 0px var(--dark-color);
             text-align: center;
+            z-index: 5;
         }
 
         .top-badge {
@@ -101,7 +157,7 @@
             font-size: 11px;
             border: 1px solid var(--dark-color);
             padding: 4px 12px;
-            border-radius: 0px; /* حواف مستطيلة صريحة */
+            border-radius: 0px;
             margin-bottom: 25px;
             background-color: var(--card-bg);
         }
@@ -116,7 +172,7 @@
             color: var(--ritual-green);
         }
 
-        /* مربع عرض الأفاتار المستطيل بالكامل مع رمز ريتشوال في الخلفية */
+        /* مربع عرض الأفاتار المستطيل */
         .avatar-rect-box {
             width: 220px;
             height: 220px;
@@ -131,7 +187,7 @@
             overflow: hidden;
         }
 
-        /* رمز يعبر عن حلقات Ritual في خلفية المربع */
+        /* رمز حلقات Ritual في خلفية المربع */
         .ritual-bg-symbol {
             position: absolute;
             width: 160px;
@@ -178,7 +234,7 @@
             z-index: 3;
         }
 
-        /* خانة إدخال اليوزر المستطيلة المعدلة بالكامل */
+        /* خانة إدخال اليوزر المستطيلة */
         .input-block-zone {
             margin-bottom: 30px;
             text-align: left;
@@ -212,9 +268,9 @@
             color: var(--dark-color);
         }
 
-        /* زر المينت المخفي ذكياً ولا يظهر إلا بعد إضافة يوزر X */
+        /* زر المينت الديناميكي المخفي */
         .dynamic-mint-container {
-            display: none; /* مخفي افتراضياً */
+            display: none;
             opacity: 0;
             transition: opacity 0.3s ease;
             margin-top: 10px;
@@ -251,14 +307,30 @@
             margin-top: auto;
             padding: 20px;
             font-family: 'Courier Prime', monospace;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
 
+    <!-- الشعلة الخضراء اليسرى المتحركة -->
+    <div class="green-flame-container flame-left">
+        <div class="flame"></div>
+        <div class="flame-particle" style="animation-delay: 0.2s; left: 20px;"></div>
+        <div class="flame-particle" style="animation-delay: 0.7s; left: 35px;"></div>
+    </div>
+
+    <!-- الشعلة الخضراء اليمنى المتحركة -->
+    <div class="green-flame-container flame-right">
+        <div class="flame"></div>
+        <div class="flame-particle" style="animation-delay: 0.4s; left: 15px;"></div>
+        <div class="flame-particle" style="animation-delay: 0.9s; left: 40px;"></div>
+    </div>
+
     <header>
         <div class="brand-container">
             <img src="https://pbs.twimg.com/profile_images/2047761933764268032/ltdZOulq_400x400.jpg" class="ritual-official-logo" alt="Ritual Logo">
+            <!-- كلمة Ritual المحدثة بالتكبير واللون الأخضر -->
             <span class="brand-name">Ritual</span>
         </div>
         <button class="wallet-pill-btn" id="walletPillBtn" onclick="connectWallet()">Connect Wallet</button>
@@ -269,7 +341,6 @@
         
         <h1>Generate AI <span>Identity</span></h1>
 
-        <!-- المربع المستطيل الحاد الجديد للأفاتار مع الرمز الخلفي لريتشوال -->
         <div class="avatar-rect-box">
             <div class="ritual-bg-symbol"></div>
             <svg class="avatar-svg" id="defaultAvatarSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -280,7 +351,6 @@
             <div class="rect-tag" id="rectUserTag">@username</div>
         </div>
 
-        <!-- خانة الإدخال المستطيلة بالكامل والمعدلة -->
         <div class="input-block-zone">
             <label class="input-label">X Handle</label>
             <div class="rect-input-container">
@@ -288,7 +358,7 @@
             </div>
         </div>
 
-        <!-- حاوية زر المينت الديناميكية (تظهر فقط عند إدخال يوزر) -->
+        <!-- زر المينت ينبثق هنا تلقائياً فور كتابة اليوزر -->
         <div class="dynamic-mint-container" id="mintContainer">
             <button class="mint-submit-btn" id="bottomActionBtn" onclick="triggerInference()">
                 Connect Wallet To Mint →
@@ -318,7 +388,6 @@
 
         let walletAccount = '';
 
-        // وظيفة فحص إدخال النص وإظهار زر المينت اختفاءً وظهوراً بشكل سحري
         function handleXTyping(value) {
             const tag = document.getElementById('rectUserTag');
             tag.innerText = value ? (value.startsWith('@') ? value : '@' + value) : '@username';
@@ -371,7 +440,6 @@
 
         async function triggerInference() {
             if (!walletAccount) {
-                // إذا لم تكن المحفظة مربوطة عند الضغط على الزر يقوم بربطها أولاً
                 await connectWallet();
                 return;
             }
@@ -383,7 +451,7 @@
             }
 
             try {
-                document.getElementById('statusFeed').innerText = "Initiating transaction on Ritual Testnet...";
+                document.getElementById('statusFeed').innerText = "Initiating transaction on Ritual Testnet... 🍳";
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const signer = provider.getSigner();
                 
@@ -395,7 +463,7 @@
                 document.getElementById('statusFeed').innerText = "Awaiting block confirmation... ⏳";
                 await tx.wait();
 
-                document.getElementById('statusFeed').innerText = "Cooking your avatar through Ritual AI nodes... 🍳";
+                document.getElementById('statusFeed').innerText = "Cooking your avatar through Ritual AI nodes... 🔮";
 
                 setTimeout(() => {
                     const outputUrl = "https://images.placeholders.dev/?width=400&height=400&text=" + usernameVal;
