@@ -1,179 +1,413 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ritual Avatar Generator</title>
-    <!-- مكتبة Ethers.js للتعامل مع المحفظة -->
+    <title>Ritual · Mint Identity</title>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
     <style>
-        /* التنسيق البسيط Flat 2D بالأخضر والأسود */
+        /* الألوان والتنسيقات العامة المستوحاة من موقع Ritual */
+        :root {
+            --bg-color: #f1ebd9;     /* اللون البيج/الكريمي للخلفية */
+            --card-bg: #eae3cf;      /* لون بطاقة الأفاتار والمحتوى */
+            --primary-dark: #111111; /* الأسود الصريح للخطوط والحدود */
+            --ritual-green: #0b5137; /* الأخضر الغامق المميز */
+            --text-muted: #555555;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            background-color: #0a0d0a;
-            color: #ffffff;
-            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-color);
+            color: var(--primary-dark);
+            font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
-            margin: 0;
-            box-sizing: border-box;
+            padding-bottom: 40px;
         }
+
+        /* الهيدر العلوي */
         header {
+            width: 100%;
+            max-width: 1200px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 0;
-            border-bottom: 3px solid #00ff66;
-            width: 100%;
-            max-width: 800px;
+            padding: 25px 40px;
         }
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #00ff66;
-            text-shadow: 0 0 10px #00ff66;
-        }
-        .connect-btn {
-            background-color: #00ff66;
-            color: #000000;
-            border: 2px solid #ffffff;
-            padding: 10px 20px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        main {
-            flex: 1;
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-            margin-top: 50px;
-        }
-        h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            color: #a0a0a0;
-            font-size: 16px;
-            margin-bottom: 30px;
-            line-height: 1.5;
-        }
-        .card {
-            background-color: #121612;
-            border: 3px solid #00ff66;
-            padding: 30px;
-            text-align: right;
-        }
-        .input-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            color: #00ff66;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            background-color: #1a201a;
-            border: 2px solid #00ff66;
-            color: #ffffff;
-            font-size: 16px;
-            outline: none;
-            box-sizing: border-box;
-            text-align: left;
-        }
-        .generate-btn {
-            width: 100%;
-            background-color: #00ff66;
-            color: #000000;
-            border: none;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .status {
-            margin-top: 15px;
-            font-size: 14px;
-            color: #00ff66;
-            text-align: center;
-        }
-        .image-container {
-            display: none;
-            margin-top: 40px;
-            background-color: #121612;
-            border: 3px solid #ffffff;
-            padding: 20px;
-            flex-direction: column;
+
+        /* شعار Ritual أقصى اليمين */
+        .logo-container {
+            display: flex;
             align-items: center;
+            gap: 10px;
         }
-        .image-title {
-            color: #00ff66;
-            font-size: 20px;
+
+        .ritual-logo-icon {
+            width: 28px;
+            height: 28px;
+            border: 2px solid var(--primary-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .ritual-logo-icon::before {
+            content: '';
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--primary-dark);
+            border-radius: 50%;
+        }
+        .ritual-logo-icon::after {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background-color: var(--primary-dark);
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+        .logo-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 600;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+        }
+        .logo-subtitle {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .faucet-btn {
+            background: transparent;
+            border: 1px solid #cccccc;
+            padding: 8px 16px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .top-connect-btn {
+            background: var(--primary-dark);
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* حاوية المينت الوسطى (Neo-brutalism Box) */
+        .mint-container {
+            background-color: #faf6ee;
+            border: 1px solid var(--primary-dark);
+            box-shadow: 8px 8px 0px var(--primary-dark); /* الظل الحاد المصمت */
+            width: 100%;
+            max-width: 480px;
+            padding: 40px 30px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .badge {
+            display: inline-block;
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px;
+            border: 1px solid var(--primary-dark);
+            padding: 4px 10px;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .badge::before {
+            content: "● ";
+            color: var(--ritual-green);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 400;
+            font-size: 38px;
+            line-height: 1.1;
             margin-bottom: 15px;
         }
-        .avatar-image {
-            width: 250px;
-            height: 250px;
-            border: 3px solid #00ff66;
-            margin-bottom: 20px;
+
+        h1 em {
+            font-style: italic;
+            color: var(--ritual-green);
         }
-        .download-btn {
-            background-color: #ffffff;
-            color: #000000;
-            padding: 10px 20px;
-            text-decoration: none;
-            font-weight: bold;
-            border: 2px solid #00ff66;
+
+        .description {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 30px;
         }
-        footer {
-            margin-top: 50px;
-            color: #555555;
+
+        /* منطقة الأفاتار الدائرية الدقيقة */
+        .avatar-preview-box {
+            width: 240px;
+            height: 240px;
+            border: 1px dashed #999999;
+            border-radius: 50%;
+            margin: 0 auto 35px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .avatar-inner-circle {
+            width: 220px;
+            height: 220px;
+            border: 1px solid var(--primary-dark);
+            border-radius: 50%;
+            background-color: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* أيقونة مستخدم افتراضية كلاسيكية ناعمة مثل الصورة */
+        .default-avatar-svg {
+            width: 140px;
+            height: 140px;
+            opacity: 0.25;
+        }
+
+        .avatar-image-result {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .username-tag {
+            position: absolute;
+            bottom: -10px;
+            background: var(--primary-dark);
+            color: #ffffff;
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px;
+            padding: 3px 8px;
+        }
+
+        /* حقل إدخال يوزر X المحدث والأنيق */
+        .input-title {
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .input-wrapper {
+            display: flex;
+            border: 1px solid var(--primary-dark);
+            background: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper input {
+            flex: 1;
+            border: none;
+            padding: 12px 15px;
             font-size: 14px;
+            background: transparent;
+            outline: none;
+            color: var(--primary-dark);
+        }
+
+        .load-btn {
+            background-color: var(--ritual-green);
+            color: #ffffff;
+            border: none;
+            border-left: 1px solid var(--primary-dark);
+            padding: 0 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .input-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        /* جدول بيانات المحفظة الشبكي الصغير */
+        .info-table {
+            background-color: var(--card-bg);
+            border: 1px solid #c9c1ad;
+            padding: 15px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            text-transform: uppercase;
+            color: #666666;
+        }
+
+        .switch-link {
+            color: var(--ritual-green);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* زر المينت الرئيسي الكبير السفلي */
+        .main-action-btn {
+            width: 100%;
+            background-color: #ede4d3;
+            border: 1px solid var(--primary-dark);
+            padding: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .main-action-btn:hover {
+            background-color: #e5dac1;
+        }
+
+        .status-log {
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px;
+            margin-top: 15px;
+            color: var(--ritual-green);
+            text-align: center;
+        }
+
+        footer {
+            font-size: 11px;
+            color: #888888;
+            margin-top: 25px;
+            font-family: 'Courier Prime', monospace;
+        }
+        footer a {
+            color: var(--primary-dark);
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">RITUAL AVATAR</div>
-        <button class="connect-btn" id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+        <div class="logo-container">
+            <div class="ritual-logo-icon"></div>
+            <div class="logo-text">
+                <span class="logo-title">Ritual</span>
+                <span class="logo-subtitle">Autonomous Intelligence</span>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="faucet-btn" onclick="window.open('https://faucet.ritual.net', '_blank')">Faucet ↗</button>
+            <button class="top-connect-btn" id="topConnectBtn" onclick="connectWallet()">Connect Wallet ▾</button>
+        </div>
     </header>
 
-    <main>
-        <h1>Mint Your Web3 Identity</h1>
-        <p class="subtitle">أدخل معرف X الخاص بك، وقم بعملية على شبكة الـ Testnet لتوليد الـ Avatar السحري الخاص بك.</p>
+    <div class="mint-container">
+        <div class="badge">Ritual Chain Testnet · ID 1979</div>
+        
+        <h1>Mint your <em>identity</em> on Ritual Chain.</h1>
+        <p class="description">A non-transferable proof-of-presence for the autonomous intelligence network.</p>
 
-        <div class="card">
-            <div class="input-group">
-                <label>X Username (Twitter)</label>
-                <input type="text" id="xUsername" placeholder="@username">
+        <div class="avatar-preview-box">
+            <div class="avatar-inner-circle">
+                <svg class="default-avatar-svg" id="defaultAvatar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <img src="" id="avatarImage" class="avatar-image-result" alt="Generated Identity">
             </div>
-
-            <button class="generate-btn" id="generateBtn" onclick="generateAvatar()">Generate My Avatar</button>
-
-            <p class="status" id="statusMessage"></p>
+            <div class="username-tag" id="usernameTag">@username</div>
         </div>
 
-        <div class="image-container" id="imageContainer">
-            <div class="image-title">Your Generated Avatar</div>
-            <img src="" id="avatarImage" class="avatar-image" alt="Ritual Generated Avatar">
-            <a href="#" id="downloadBtn" class="download-btn" download="ritual-avatar.png">Download Avatar</a>
+        <div class="input-title">X Username</div>
+        <div class="input-wrapper">
+            <input type="text" id="xUsername" placeholder="@ritualnet" oninput="updateTag(this.value)">
+            <button class="load-btn" onclick="generateAvatar()">Load</button>
         </div>
-    </main>
+        <div class="input-hint">Enter any X handle to load their avatar.</div>
+
+        <div class="info-table">
+            <div class="info-row">
+                <span class="info-label">Wallet</span>
+                <span id="walletStatus">Not connected</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Network</span>
+                <span id="networkStatus">—</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Total Minted</span>
+                <span>383</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Action</span>
+                <span class="switch-link" onclick="connectWallet()">Switch to Ritual Chain →</span>
+            </div>
+        </div>
+
+        <button class="main-action-btn" id="actionBtn" onclick="connectWallet()">
+            <span>Connect wallet to mint</span> →
+        </button>
+
+        <div class="status-log" id="statusLog"></div>
+    </div>
 
     <footer>
-        Made by LiTEino
+        Powered by <a href="https://ritual.net" target="_blank">ritual.net</a> · Testnet RITUAL has no monetary value
     </footer>
 
     <script>
-        // إعدادات شبكة Ritual Testnet
+        // إعدادات بارامترات شبكة Ritual Testnet
         const RITUAL_TESTNET_PARAMS = {
             chainId: '0x29A', 
             chainName: 'Ritual Testnet',
@@ -189,9 +423,14 @@
 
         let account = '';
 
+        function updateTag(val) {
+            const tag = document.getElementById('usernameTag');
+            tag.innerText = val ? (val.startsWith('@') ? val : '@' + val) : '@username';
+        }
+
         async function connectWallet() {
             if (!window.ethereum) {
-                alert("الرجاء تثبيت محفظة MetaMask أولاً!");
+                alert("Please install MetaMask wallet first!");
                 return;
             }
             try {
@@ -200,7 +439,12 @@
                 const signer = provider.getSigner();
                 account = await signer.getAddress();
                 
-                document.getElementById('connectBtn').innerText = account.substring(0, 6) + '...' + account.substring(account.length - 4);
+                // تحديث الواجهة والبيانات مثل لقطة الشاشة تماماً
+                const shortAddress = account.substring(0, 6) + '...' + account.substring(account.length - 4);
+                document.getElementById('topConnectBtn').innerText = shortAddress;
+                document.getElementById('walletStatus').innerText = shortAddress;
+                document.getElementById('networkStatus').innerText = "Ritual Testnet";
+                document.getElementById('actionBtn').innerHTML = "<span>Mint Identity NFT</span> →";
 
                 try {
                     await window.ethereum.request({
@@ -215,51 +459,57 @@
                         });
                     }
                 }
-                document.getElementById('statusMessage').innerText = "تم ربط المحفظة بنجاح على شبكة Ritual!";
+                document.getElementById('statusLog').innerText = "Wallet linked on Ritual Testnet.";
             } catch (error) {
                 console.error(error);
-                document.getElementById('statusMessage').innerText = "فشل في ربط المحفظة.";
+                document.getElementById('statusLog').innerText = "Connection failed.";
             }
         }
 
         async function generateAvatar() {
             const xUsername = document.getElementById('xUsername').value;
             if (!account) {
-                alert("الرجاء ربط المحفظة أولاً!");
+                alert("Please connect your wallet first!");
                 return;
             }
             if (!xUsername) {
-                alert("الرجاء إدخال اسم المستخدم في X!");
+                alert("Please enter an X username!");
                 return;
             }
 
             try {
-                document.getElementById('statusMessage').innerText = "جاري إعداد المعاملة لتوليد الـ Avatar...";
+                document.getElementById('statusLog').innerText = "Preparing blockchain inference request...";
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const signer = provider.getSigner();
                 
                 const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
                 
+                // إرسال المعاملة الحقيقية على ريتشوال تيسنت
                 const tx = await contract.requestAvatar(xUsername, {
                     value: ethers.utils.parseEther("0.0") 
                 });
 
-                document.getElementById('statusMessage').innerText = "جاري معالجة المعاملة على شبكة Ritual... انتظر قليلاً ⏳";
+                document.getElementById('statusLog').innerText = "Transaction pending on Ritual Chain... ⏳";
                 await tx.wait();
 
-                document.getElementById('statusMessage').innerText = "تم تأكيد المعاملة بنجاح! جاري طبخ الصورة بالذكاء الاصطناعي... 🍳";
+                document.getElementById('statusLog').innerText = "Tx confirmed! Ritual node is baking your prompt AI avatar... 🍳";
 
+                // محاكاة استلام الصورة المطبوعة بالبرومبت من شبكة ريتشوال
                 setTimeout(() => {
-                    const mockImageUrl = "https://images.placeholders.dev/?width=400&height=400&text=LiTEino_Style_Generated";
-                    document.getElementById('avatarImage').src = mockImageUrl;
-                    document.getElementById('downloadBtn').href = mockImageUrl;
-                    document.getElementById('imageContainer').style.display = 'flex';
-                    document.getElementById('statusMessage').innerText = "جاهز! تم توليد صورتك الشخصية بنجاح 💎";
+                    // رابط صورة تجريبية ناتجة
+                    const resultImgUrl = "https://images.placeholders.dev/?width=400&height=400&text=" + xUsername;
+                    
+                    document.getElementById('defaultAvatar').style.display = 'none';
+                    const imgEl = document.getElementById('avatarImage');
+                    imgEl.src = resultImgUrl;
+                    imgEl.style.display = 'block';
+                    
+                    document.getElementById('statusLog').innerText = "Identity Avatar Generated Successfully! 💎";
                 }, 5000);
 
             } catch (error) {
                 console.error(error);
-                document.getElementById('statusMessage').innerText = "حدث خطأ أثناء إرسال المعاملة.";
+                document.getElementById('statusLog').innerText = "Inference request failed or rejected.";
             }
         }
     </script>
