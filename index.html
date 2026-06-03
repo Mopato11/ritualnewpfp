@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ritual · Identity Canvas</title>
+    <title>Ritual · Identity Mint</title>
     <!-- مكتبة Ethers.js للربط مع المحفظة -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +16,6 @@
             --card-bg: #e6dfca;      /* لون البطاقة الداخلي */
             --dark-color: #121212;   /* الأسود الغامق للحدود */
             --ritual-green: #084c33; /* أخضر ريتشوال الغامق */
-            --glowing-green: #0cd97e; /* الأخضر المشع للتأثيرات الطقسية */
         }
 
         * {
@@ -83,7 +82,7 @@
             box-shadow: 5px 5px 0px var(--dark-color);
         }
 
-        /* الحاوية الرئيسية للموقع */
+        /* حاوية التصميم المستطيلة الكاملة الحواف */
         .main-card {
             width: 100%;
             max-width: 460px;
@@ -102,7 +101,7 @@
             font-size: 11px;
             border: 1px solid var(--dark-color);
             padding: 4px 12px;
-            border-radius: 4px;
+            border-radius: 0px; /* حواف مستطيلة صريحة */
             margin-bottom: 25px;
             background-color: var(--card-bg);
         }
@@ -117,60 +116,46 @@
             color: var(--ritual-green);
         }
 
-        /* تعديل البانر ليصبح مستطيلاً مسطحاً (Flat Rectangle Canvas) */
-        .identity-banner-rect {
-            position: relative;
-            width: 240px;
-            height: 280px; /* شكل مستطيل عمودي أنيق */
-            margin: 0 auto 35px auto;
+        /* مربع عرض الأفاتار المستطيل بالكامل مع رمز ريتشوال في الخلفية */
+        .avatar-rect-box {
+            width: 220px;
+            height: 220px;
             border: 2px solid var(--dark-color);
             background-color: var(--card-bg);
-            box-shadow: 5px 5px 0px var(--dark-color);
+            margin: 0 auto 35px auto;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 5px 5px 0px var(--dark-color);
             overflow: hidden;
         }
 
-        /* رمز يعبر عن طقوس ريتشوال (مذبح مبسط مع شمعة ورمز مشع) */
-        .ritual-altar-icon {
+        /* رمز يعبر عن حلقات Ritual في خلفية المربع */
+        .ritual-bg-symbol {
             position: absolute;
+            width: 160px;
+            height: 160px;
+            border: 1px dashed rgba(8, 76, 51, 0.25);
+            border-radius: 50%;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: flex-end;
-            width: 100%;
-            height: 100%;
-            padding-bottom: 40px;
-            opacity: 0.15; /* خلفية هادئة مدمجة */
-            transition: opacity 0.3s ease;
+            justify-content: center;
             pointer-events: none;
         }
-
-        .ritual-candle-flame {
-            width: 12px;
-            height: 18px;
-            background-color: var(--glowing-green);
-            border-radius: 50% 50% 20% 20%;
-            box-shadow: 0 0 12px var(--glowing-green);
-            margin-bottom: 4px;
+        .ritual-bg-symbol::before {
+            content: '';
+            width: 100px;
+            height: 100px;
+            border: 1px solid rgba(18, 18, 18, 0.15);
+            border-radius: 50%;
         }
 
-        .ritual-altar-stone {
-            width: 70px;
-            height: 50px;
-            border: 2px solid var(--dark-color);
-            background-color: #5c5542;
-            position: relative;
-        }
-        .ritual-altar-stone::after {
-            content: '☤'; /* رمز غامض بسيط */
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: var(--glowing-green);
-            font-size: 16px;
+        .avatar-svg {
+            width: 90px;
+            height: 90px;
+            opacity: 0.3;
+            z-index: 1;
         }
 
         .avatar-img {
@@ -178,59 +163,64 @@
             height: 100%;
             object-fit: cover;
             display: none;
-            position: relative;
             z-index: 2;
         }
 
-        .floating-tag {
+        .rect-tag {
             position: absolute;
-            bottom: 15px;
+            bottom: 0;
+            width: 100%;
             background: var(--dark-color);
             color: #ffffff;
             font-family: 'Courier Prime', monospace;
             font-size: 11px;
-            padding: 4px 14px;
-            border-radius: 0px; /* حواف حادة ملائمة للمستطيل */
-            border: 1px solid #ffffff;
+            padding: 4px 0;
             z-index: 3;
         }
 
-        /* منطقة وضع اليوزر الكبسولية المتفاعلة */
-        .search-zone {
-            margin-bottom: 25px;
+        /* خانة إدخال اليوزر المستطيلة المعدلة بالكامل */
+        .input-block-zone {
+            margin-bottom: 30px;
             text-align: left;
         }
-        .search-label {
+        
+        .input-label {
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 8px;
             display: block;
-            color: #4a4433;
         }
-        .capsule-input-container {
+
+        .rect-input-container {
             display: flex;
-            align-items: center;
             background: #ffffff;
             border: 2px solid var(--dark-color);
-            border-radius: 50px;
-            padding: 4px;
-            box-shadow: 3px 3px 0px var(--dark-color);
+            box-shadow: 4px 4px 0px var(--dark-color);
         }
-        .capsule-input-container input {
-            flex: 1;
+
+        .rect-input-container input {
+            width: 100%;
             border: none;
             background: transparent;
-            padding: 12px 20px;
+            padding: 14px 15px;
+            font-family: 'Courier Prime', monospace;
             font-size: 15px;
+            font-weight: bold;
             outline: none;
             color: var(--dark-color);
         }
 
-        /* زر المينت السفلي الكبير (تم ضبطه ليختفي ويظهر فقط بعد إدخال اليوزر) */
-        .mint-submit-btn {
+        /* زر المينت المخفي ذكياً ولا يظهر إلا بعد إضافة يوزر X */
+        .dynamic-mint-container {
             display: none; /* مخفي افتراضياً */
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .mint-submit-btn {
             width: 100%;
             background-color: transparent;
             border: 2px solid var(--dark-color);
@@ -238,25 +228,19 @@
             font-size: 15px;
             font-weight: 700;
             cursor: pointer;
-            border-radius: 6px;
             box-shadow: 4px 4px 0px var(--dark-color);
             transition: all 0.1s ease;
-            margin-top: 10px;
-            animation: fadeInBtn 0.3s ease-in-out forwards;
         }
         .mint-submit-btn:hover {
-            background-color: #f3edd7;
-        }
-
-        @keyframes fadeInBtn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            background-color: #ede4d3;
+            transform: translate(-1px, -1px);
+            box-shadow: 5px 5px 0px var(--dark-color);
         }
 
         .status-logger {
             font-family: 'Courier Prime', monospace;
             font-size: 12px;
-            margin-top: 18px;
+            margin-top: 20px;
             color: var(--ritual-green);
             font-weight: bold;
         }
@@ -285,30 +269,31 @@
         
         <h1>Generate AI <span>Identity</span></h1>
 
-        <!-- البانر المستطيل الجديد المحتوي على تلميحات طقوس ريتشوال البديلة -->
-        <div class="identity-banner-rect" id="bannerRect">
-            <!-- رمز المذبح والطلب الخاص بريتشوال خلف الأفاتار -->
-            <div class="ritual-altar-icon" id="altarIcon">
-                <div class="ritual-candle-flame"></div>
-                <div class="ritual-altar-stone"></div>
-            </div>
-            
+        <!-- المربع المستطيل الحاد الجديد للأفاتار مع الرمز الخلفي لريتشوال -->
+        <div class="avatar-rect-box">
+            <div class="ritual-bg-symbol"></div>
+            <svg class="avatar-svg" id="defaultAvatarSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
             <img src="" id="generatedAvatarImg" class="avatar-img" alt="Ritual Identity">
-            <div class="floating-tag" id="floatingUserTag">@username</div>
+            <div class="rect-tag" id="rectUserTag">@username</div>
         </div>
 
-        <!-- خانة وضع اليوزر النظيفة وبدون أي معلومات تحتها -->
-        <div class="search-zone">
-            <label class="search-label">X Handle</label>
-            <div class="capsule-input-container">
-                <input type="text" id="xInput" placeholder="@username" oninput="handleInputChange(this.value)">
+        <!-- خانة الإدخال المستطيلة بالكامل والمعدلة -->
+        <div class="input-block-zone">
+            <label class="input-label">X Handle</label>
+            <div class="rect-input-container">
+                <input type="text" id="xInput" placeholder="@handle" oninput="handleXTyping(this.value)">
             </div>
         </div>
 
-        <!-- زر المينت الذكي الذي يظهر مشروطاً فقط بعد إدخال النص -->
-        <button class="mint-submit-btn" id="bottomActionBtn" onclick="triggerInference()">
-            Mint Identity Avatar →
-        </button>
+        <!-- حاوية زر المينت الديناميكية (تظهر فقط عند إدخال يوزر) -->
+        <div class="dynamic-mint-container" id="mintContainer">
+            <button class="mint-submit-btn" id="bottomActionBtn" onclick="triggerInference()">
+                Connect Wallet To Mint →
+            </button>
+        </div>
 
         <div class="status-logger" id="statusFeed"></div>
     </div>
@@ -333,22 +318,18 @@
 
         let walletAccount = '';
 
-        // التحكم في ظهور زر المينت وتحديث التاج بناءً على الكتابة
-        function handleInputChange(value) {
-            const tag = document.getElementById('floatingUserTag');
-            const mintBtn = document.getElementById('bottomActionBtn');
-            const altar = document.getElementById('altarIcon');
-            
-            // تحديث النص العائم
+        // وظيفة فحص إدخال النص وإظهار زر المينت اختفاءً وظهوراً بشكل سحري
+        function handleXTyping(value) {
+            const tag = document.getElementById('rectUserTag');
             tag.innerText = value ? (value.startsWith('@') ? value : '@' + value) : '@username';
-            
-            // إظهار أو إخفاء زر المينت بناءً على وجود يوزر
+
+            const mintBox = document.getElementById('mintContainer');
             if (value.trim().length > 0) {
-                mintBtn.style.display = 'block';
-                altar.style.opacity = '0.4'; // يزداد وهج المذبح كإشارة تفاعلية
+                mintBox.style.display = 'block';
+                setTimeout(() => { mintBox.style.opacity = '1'; }, 10);
             } else {
-                mintBtn.style.display = 'none';
-                altar.style.opacity = '0.15';
+                mintBox.style.opacity = '0';
+                setTimeout(() => { mintBox.style.display = 'none'; }, 300);
             }
         }
 
@@ -364,8 +345,10 @@
                 walletAccount = await signer.getAddress();
                 
                 const formatAddr = walletAccount.substring(0, 6) + '...' + walletAccount.substring(walletAccount.length - 4);
+                
                 document.getElementById('walletPillBtn').innerText = formatAddr;
-                document.getElementById('statusFeed').innerText = "Wallet linked successfully.";
+                document.getElementById('bottomActionBtn').innerText = "Mint Identity Avatar →";
+                document.getElementById('statusFeed').innerText = "Wallet active on Ritual Network.";
 
                 try {
                     await window.ethereum.request({
@@ -382,21 +365,25 @@
                 }
             } catch (e) {
                 console.error(e);
-                document.getElementById('statusFeed').innerText = "Wallet linkage rejected.";
+                document.getElementById('statusFeed').innerText = "Connection rejected.";
             }
         }
 
         async function triggerInference() {
-            const usernameVal = document.getElementById('xInput').value;
             if (!walletAccount) {
-                // إذا لم يربط المحفظة يطلب منه ذلك أولاً
+                // إذا لم تكن المحفظة مربوطة عند الضغط على الزر يقوم بربطها أولاً
                 await connectWallet();
                 return;
             }
-            if (!usernameVal) return;
+
+            const usernameVal = document.getElementById('xInput').value;
+            if (!usernameVal) {
+                alert("Please fill in your X handle!");
+                return;
+            }
 
             try {
-                document.getElementById('statusFeed').innerText = "Sending transaction to Ritual Testnet...";
+                document.getElementById('statusFeed').innerText = "Initiating transaction on Ritual Testnet...";
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const signer = provider.getSigner();
                 
@@ -408,17 +395,17 @@
                 document.getElementById('statusFeed').innerText = "Awaiting block confirmation... ⏳";
                 await tx.wait();
 
-                document.getElementById('statusFeed').innerText = "Cooking your identity avatar through AI nodes... 🍳";
+                document.getElementById('statusFeed').innerText = "Cooking your avatar through Ritual AI nodes... 🍳";
 
                 setTimeout(() => {
                     const outputUrl = "https://images.placeholders.dev/?width=400&height=400&text=" + usernameVal;
                     
-                    document.getElementById('altarIcon').style.display = 'none';
+                    document.getElementById('defaultAvatarSvg').style.display = 'none';
                     const targetImg = document.getElementById('generatedAvatarImg');
                     targetImg.src = outputUrl;
                     targetImg.style.display = 'block';
                     
-                    document.getElementById('statusFeed').innerText = "Your decentralized AI Avatar is fully baked! 💎";
+                    document.getElementById('statusFeed').innerText = "AI Identity Mint Complete! 💎";
                 }, 5000);
 
             } catch (err) {
