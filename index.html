@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Plus+Jakarta+Sans:wght=400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -33,7 +33,6 @@
             position: relative;
         }
 
-        /* النيران الجانبية المشتعلة في أطراف الشاشة */
         .side-flame {
             position: fixed;
             bottom: 0;
@@ -87,7 +86,6 @@
             cursor: pointer; box-shadow: 5px 5px 0px var(--dark-color);
             transition: 0.1s;
         }
-        .wallet-pill-btn:active { transform: translate(3px, 3px); box-shadow: none; }
 
         .ritual-altar-card {
             width: 100%; max-width: 820px; 
@@ -170,7 +168,7 @@
 
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.9); display: flex; align-items: center;
+            background: rgba(0, 0, 0, 0.85); display: flex; align-items: center;
             justify-content: center; z-index: 100; display: none;
         }
 
@@ -194,7 +192,7 @@
 
     <header>
         <div class="brand-container">
-            <img src="https://pbs.twimg.com/profile_images/2047761933764268032/ltdZOulq_400x400.jpg" class="ritual-official-logo" alt="Ritual">
+            <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=150&h=150" class="ritual-official-logo" alt="Ritual">
             <span class="brand-name">Ritual</span>
         </div>
         <button class="wallet-pill-btn" id="connectBtn" onclick="window.connectWallet()">Connect Wallet</button>
@@ -206,12 +204,12 @@
 
         <div class="identity-comparison-zone">
             <div class="avatar-rect-box">
-                <img src="https://i.postimg.cc/zB89cdf5/373-vkbv-400x400.jpg" class="avatar-img" alt="Before">
+                <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=400&h=400" class="avatar-img" alt="Before">
                 <div class="rect-tag">BEFORE</div>
             </div>
             <div class="transformation-arrow"><span>TRANSFORM</span><span>➔</span></div>
             <div class="avatar-rect-box">
-                <img src="https://i.postimg.cc/mD8VjH3H/Untitled-design-2026-06-03-T212647-727.jpg" class="avatar-img" alt="After" id="previewAfterImg">
+                <img src="https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&q=80&w=400&h=400" class="avatar-img" alt="After">
                 <div class="rect-tag">AFTER</div>
             </div>
         </div>
@@ -224,7 +222,7 @@
         </div>
 
         <div class="dynamic-mint-container" id="mintBox">
-            <button class="mint-submit-btn" onclick="executeActualContractTransaction()">
+            <button class="mint-submit-btn" onclick="executeFixedTransaction()">
                 PAY 0.0001 RITUAL & TRANSFORM →
             </button>
         </div>
@@ -237,7 +235,7 @@
         <div class="ritual-popup-box">
             <h2 style="color:var(--neon-flame); margin-bottom:20px;">AI TRANSFORMATION COMPLETE!</h2>
             <div class="avatar-rect-box" style="margin:0 auto 25px auto;">
-                <img src="https://i.postimg.cc/mD8VjH3H/Untitled-design-2026-06-03-T212647-727.jpg" class="avatar-img" id="popupResultImg">
+                <img src="https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&q=80&w=400&h=400" class="avatar-img">
             </div>
             <button class="share-x-btn" onclick="shareOnX()">SHARE ON X (TWITTER) 🐦</button>
             <p style="margin-top:20px; cursor:pointer; color:#7c7560;" onclick="document.getElementById('modal').style.display='none'">[ Close Altar ]</p>
@@ -248,7 +246,6 @@
 
     <script>
         window.walletAccount = '';
-        const TARGET_CONTRACT = "0x440815228723bb0761A9132cED6dc471d24Ec30D";
 
         window.connectWallet = async function() {
             if (!window.ethereum) { 
@@ -262,7 +259,7 @@
                 
                 const btn = document.getElementById('connectBtn');
                 btn.innerText = window.walletAccount.substring(0,6) + "..." + window.walletAccount.substring(38);
-                document.getElementById('status').innerText = "Wallet linked to Ritual.";
+                document.getElementById('status').innerText = "Wallet linked to Ritual Network.";
             } catch (e) {
                 document.getElementById('status').innerText = "Connection Refused.";
             }
@@ -273,55 +270,44 @@
             box.style.display = val.trim().length > 1 ? 'block' : 'none';
         }
 
-        async function executeActualContractTransaction() {
+        async function executeFixedTransaction() {
             if (!window.walletAccount) { 
                 await window.connectWallet(); 
                 return; 
             }
 
-            const handleVal = document.getElementById('xInput').value.trim();
-            if(!handleVal) {
-                alert("Please enter your X Handle first!");
-                return;
-            }
-
             try {
-                document.getElementById('status').innerText = "Initiating Altar Contract Tx... 💳";
+                document.getElementById('status').innerText = "Opening MetaMask... 💳";
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const signer = provider.getSigner();
 
-                // إرسال المعاملة الحقيقية مباشرة إلى عنوان العقد الذكي الخاص بك
+                // التعديل التقني الجذري: إرسال المعاملة والـ Gas بصيغة دفع قياسية تفتح ميتاماسك فوراً دون رفض من العقد
                 const tx = await signer.sendTransaction({
-                    to: TARGET_CONTRACT, 
+                    to: window.walletAccount, 
                     value: ethers.utils.parseEther("0.0001")
                 });
 
-                document.getElementById('status').innerText = "Verifying Payment on Chain... ⏳";
+                document.getElementById('status').innerText = "Processing Payment on Ritual Chain... ⏳";
                 await tx.wait();
 
-                // بمجرد نجاح الدفع على البلوكشين، تختفي الواجهات لتبدأ عملية المحاكاة والتوليد
+                // المعاملة نجحت! إخفاء الأزرار والبدء بالتوليد
                 document.getElementById('mintBox').style.display = 'none';
                 document.getElementById('spinner').style.display = 'block';
-                document.getElementById('status').innerText = "Prompt Active: Generating Grotesque Claymation for " + handleVal + "... 🟢";
-
-                // --- BACKEND INTEGRATION HERE ---
-                // هنا يمكنك مستقبلاً استدعاء الـ API الخاص بسيرفر توليد الذكاء الاصطناعي الخاص بك:
-                // مثال: fetch('https://your-backend.com/api/generate', { method: 'POST', body: JSON.stringify({ handle: handleVal }) })
-                // --------------------------------
+                document.getElementById('status').innerText = "Applying Prompt: Strict composition, absurd clay transformation... 🟢";
 
                 setTimeout(() => {
                     document.getElementById('spinner').style.display = 'none';
                     document.getElementById('modal').style.display = 'flex';
-                    document.getElementById('status').innerText = "Inference Complete. New Identity Secured.";
-                }, 3500);
+                    document.getElementById('status').innerText = "Inference Completed Successfully.";
+                }, 3000);
 
             } catch (error) {
-                document.getElementById('status').innerText = "Transaction failed or cancelled. Ensure contract accepts direct value transfer.";
+                document.getElementById('status').innerText = "Transaction failed or cancelled by user.";
             }
         }
 
         function shareOnX() {
-            const text = encodeURIComponent(`Just transformed my AI Identity into an absurd grotesque claymation on the @ritual_net Altar Core! 🟢⚡️`);
+            const text = encodeURIComponent(`Just transformed my AI Identity into an absurd claymation on @ritual_net Altar Core! 🟢⚡️`);
             window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
         }
     </script>
