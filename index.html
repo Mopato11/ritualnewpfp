@@ -1,295 +1,267 @@
-import React, { useState } from 'react';
-import { ethers } from 'ethers';
-
-// إعدادات شبكة Ritual Testnet
-const RITUAL_TESTNET_PARAMS = {
-  chainId: '0x29A', // ضع الـ Chain ID الصحيح لشبكة تيسنت ريتشوال هنا (مثال: 666 تحول إلى هيكس)
-  chainName: 'Ritual Testnet',
-  rpcUrls: ['https://rpc.ritual.net'], // ضع رابط الـ RPC الصحيح للشبكة
-  nativeCurrency: { name: 'RITUAL', symbol: 'RITUAL', decimals: 18 },
-  blockExplorerUrls: ['https://explorer.ritual.net']
-};
-
-// معلومات العقد الذكي الخاص بك على الشبكة
-const CONTRACT_ADDRESS = "0x0000000000000000000000000000000000000000"; // ضع عنوان عقدك هنا
-const CONTRACT_ABI = [
-  "function requestAvatar(string memory xUsername) external payable returns (bytes32)"
-];
-
-export default function RitualAvatarApp() {
-  const [account, setAccount] = useState('');
-  const [xUsername, setXUsername] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [statusMessage, setStatusMessage] = useState('');
-  const [generatedImage, setGeneratedImage] = useState('');
-
-  // 1. وظيفة ربط المحفظة والتحويل لشبكة Ritual
-  const connectWallet = async () => {
-    if (!window.ethereum) {
-      alert("الرجاء تثبيت محفظة MetaMask أولاً!");
-      return;
-    }
-    try {
-      setLoading(true);
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = provider.getSigner();
-      const address = await signer.getAddress();
-      setAccount(address);
-
-      // محاولة تحويل الشبكة إلى ريتشوال تيسنت
-      try {
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: RITUAL_TESTNET_PARAMS.chainId }],
-        });
-      } catch (switchError) {
-        // إذا لم تكن الشبكة مضافة مسبقاً يتم إضافتها
-        if (switchError.code === 4902) {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [RITUAL_TESTNET_PARAMS],
-          });
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ritual Avatar Generator</title>
+    <!-- مكتبة Ethers.js للتعامل مع المحفظة -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <style>
+        /* التنسيق البسيط Flat 2D بالأخضر والأسود */
+        body {
+            background-color: #0a0d0a;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+            box-sizing: border-box;
         }
-      }
-      setStatusMessage("تم ربط المحفظة بنجاح على شبكة Ritual!");
-    } catch (error) {
-      console.error(error);
-      setStatusMessage("فشل في ربط المحفظة.");
-    } finally {
-      setLoading(false);
-    }
-  };
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 3px solid #00ff66;
+            width: 100%;
+            max-width: 800px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff66;
+            text-shadow: 0 0 10px #00ff66;
+        }
+        .connect-btn {
+            background-color: #00ff66;
+            color: #000000;
+            border: 2px solid #ffffff;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            margin-top: 50px;
+        }
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #a0a0a0;
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        .card {
+            background-color: #121612;
+            border: 3px solid #00ff66;
+            padding: 30px;
+            text-align: right;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            color: #00ff66;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            background-color: #1a201a;
+            border: 2px solid #00ff66;
+            color: #ffffff;
+            font-size: 16px;
+            outline: none;
+            box-sizing: border-box;
+            text-align: left;
+        }
+        .generate-btn {
+            width: 100%;
+            background-color: #00ff66;
+            color: #000000;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .status {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #00ff66;
+            text-align: center;
+        }
+        .image-container {
+            display: none;
+            margin-top: 40px;
+            background-color: #121612;
+            border: 3px solid #ffffff;
+            padding: 20px;
+            flex-direction: column;
+            align-items: center;
+        }
+        .image-title {
+            color: #00ff66;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        .avatar-image {
+            width: 250px;
+            height: 250px;
+            border: 3px solid #00ff66;
+            margin-bottom: 20px;
+        }
+        .download-btn {
+            background-color: #ffffff;
+            color: #000000;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: bold;
+            border: 2px solid #00ff66;
+        }
+        footer {
+            margin-top: 50px;
+            color: #555555;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
 
-  // 2. وظيفة إرسال المعاملة وتوليد الصورة
-  const generateAvatar = async () => {
-    if (!account) {
-      alert("الرجاء ربط المحفظة أولاً!");
-      return;
-    }
-    if (!xUsername) {
-      alert("الرجاء إدخال اسم المستخدم في X!");
-      return;
-    }
+    <header>
+        <div class="logo">RITUAL AVATAR</div>
+        <button class="connect-btn" id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+    </header>
 
-    try {
-      setLoading(true);
-      setStatusMessage("جاري إعداد المعاملة لتوليد الـ Avatar...");
+    <main>
+        <h1>Mint Your Web3 Identity</h1>
+        <p class="subtitle">أدخل معرف X الخاص بك، وقم بعملية على شبكة الـ Testnet لتوليد الـ Avatar السحري الخاص بك.</p>
 
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      
-      // ربط العقد الذكي
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+        <div class="card">
+            <div class="input-group">
+                <label>X Username (Twitter)</label>
+                <input type="text" id="xUsername" placeholder="@username">
+            </div>
 
-      // إرسال المعاملة للشبكة (مع دفع رسوم غاز أو قيمة محددة إذا تطلب العقد ذلك)
-      const tx = await contract.requestAvatar(xUsername, {
-        value: ethers.utils.parseEther("0.0"), // عدلها إذا كان التوليد يتطلب دفع عملات تيسنت معينة
-      });
+            <button class="generate-btn" id="generateBtn" onclick="generateAvatar()">Generate My Avatar</button>
 
-      setStatusMessage("جاري معالجة المعاملة على شبكة Ritual... انتظر قليلاً ⏳");
-      await tx.wait(); // انتظار تأكيد المعاملة على البلوكشين
-
-      setStatusMessage("تم تأكيد المعاملة بنجاح! جاري طبخ الصورة بالذكاء الاصطناعي... 🍳");
-
-      // هنا يتم استدعاء النتيجة بعد المعالجة من العقد الذكي أو الـ API التابع لريتشوال
-      // هذا مجرد محاكاة للنتيجة المستلمة حتى تضع رابط الـ API أو الـ IPFS الفعلي للصور
-      setTimeout(() => {
-        // سيتم دمج اسم المستخدم مع البرومبت الخاص بك خلف الكواليس في خادم ريتشوال أو العقد
-        setGeneratedImage("https://images.placeholders.dev/?width=400&height=400&text=LiTEino_Style_Generated"); 
-        setStatusMessage("جاهز! تم توليد صورتك الشخصية بنجاح 💎");
-      }, 5000);
-
-    } catch (error) {
-      console.error(error);
-      setStatusMessage("حدث خطأ أثناء إرسال المعاملة أو التوليد.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div style={styles.container}>
-      {/* الهيدر */}
-      <header style={styles.header}>
-        <div style={styles.logo}>RITUAL AVATAR</div>
-        <button onClick={connectWallet} style={styles.connectBtn}>
-          {account ? `${account.substring(0, 6)}...${account.substring(account.length - 4)}` : "Connect Wallet"}
-        </button>
-      </header>
-
-      {/* المحتوى الرئيسي */}
-      <main style={styles.mainContent}>
-        <h1 style={styles.title}>Mint Your Web3 Identity</h1>
-        <p style={styles.subtitle}>أدخل معرف X الخاص بك، وقم بعملية على شبكة الـ Testnet لتوليد الـ Avatar السحري الخاص بك.</p>
-
-        <div style={styles.card}>
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>X Username (Twitter)</label>
-            <input 
-              type="text" 
-              placeholder="@username" 
-              value={xUsername}
-              onChange={(e) => setXUsername(e.target.value)}
-              style={styles.input}
-              disabled={loading}
-            />
-          </div>
-
-          <button 
-            onClick={generateAvatar} 
-            style={{...styles.generateBtn, opacity: loading ? 0.6 : 1}}
-            disabled={loading}
-          >
-            {loading ? "Processing..." : "Generate My Avatar"}
-          </button>
-
-          {statusMessage && <p style={styles.status}>{statusMessage}</p>}
+            <p class="status" id="statusMessage"></p>
         </div>
 
-        {/* عرض الصورة بعد التوليد */}
-        {generatedImage && (
-          <div style={styles.imageContainer}>
-            <h2 style={styles.imageTitle}>Your Generated Avatar</h2>
-            <img src={generatedImage} alt="Ritual Generated Avatar" style={styles.avatarImage} />
-            <a href={generatedImage} download="ritual-avatar.png" style={styles.downloadBtn}>Download Avatar</a>
-          </div>
-        )}
-      </main>
+        <div class="image-container" id="imageContainer">
+            <div class="image-title">Your Generated Avatar</div>
+            <img src="" id="avatarImage" class="avatar-image" alt="Ritual Generated Avatar">
+            <a href="#" id="downloadBtn" class="download-btn" download="ritual-avatar.png">Download Avatar</a>
+        </div>
+    </main>
 
-      <footer style={styles.footer}>
+    <footer>
         Made by LiTEino
-      </footer>
-    </div>
-  );
-}
+    </footer>
 
-// تنسيق ستايل الـ Flat 2D بالأخضر المشع بدون تعقيدات 3D
-const styles = {
-  container: {
-    backgroundColor: '#0a0d0a',
-    color: '#ffffff',
-    fontFamily: 'Courier New, Courier, monospace',
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    padding: '20px',
-  },
-  header: {
-    width: '100%',
-    maxWidth: '1000px',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '20px 0',
-    borderBottom: '3px solid #00ff66',
-  },
-  logo: {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#00ff66',
-    textShadow: '0 0 10px #00ff66',
-  },
-  connectBtn: {
-    backgroundColor: '#00ff66',
-    color: '#000000',
-    border: '2px solid #ffffff',
-    padding: '10px 20px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    fontSize: '16px',
-  },
-  mainContent: {
-    flex: 1,
-    width: '100%',
-    maxWidth: '600px',
-    textAlign: 'center',
-    marginTop: '50px',
-  },
-  title: {
-    fontSize: '32px',
-    marginBottom: '10px',
-  },
-  subtitle: {
-    color: '#a0a0a0',
-    fontSize: '16px',
-    marginBottom: '30px',
-    lineHeight: '1.5',
-  },
-  card: {
-    backgroundColor: '#121612',
-    border: '3px solid #00ff66',
-    padding: '30px',
-    textAlign: 'left',
-  },
-  inputGroup: {
-    marginBottom: '20px',
-  },
-  label: {
-    display: 'block',
-    color: '#00ff66',
-    marginBottom: '10px',
-    fontSize: '14px',
-  },
-  input: {
-    width: '100%',
-    padding: '12px',
-    backgroundColor: '#1a201a',
-    border: '2px solid #00ff66',
-    color: '#ffffff',
-    fontSize: '16px',
-    outline: 'none',
-    boxSizing: 'border-box',
-  },
-  generateBtn: {
-    width: '100%',
-    backgroundColor: '#00ff66',
-    color: '#000000',
-    border: 'none',
-    padding: '15px',
-    fontSize: '18px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    transition: '0.2s',
-  },
-  status: {
-    marginTop: '15px',
-    fontSize: '14px',
-    color: '#00ff66',
-    textAlign: 'center',
-  },
-  imageContainer: {
-    marginTop: '40px',
-    backgroundColor: '#121612',
-    border: '3px solid #ffffff',
-    padding: '20px',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  imageTitle: {
-    color: '#00ff66',
-    fontSize: '20px',
-    marginBottom: '15px',
-  },
-  avatarImage: {
-    width: '250px',
-    height: '250px',
-    border: '3px solid #00ff66',
-    marginBottom: '20px',
-  },
-  downloadBtn: {
-    backgroundColor: '#ffffff',
-    color: '#000000',
-    padding: '10px 20px',
-    textDecoration: 'none',
-    fontWeight: 'bold',
-    border: '2px solid #00ff66',
-  },
-  footer: {
-    marginTop: '50px',
-    color: '#555555',
-    fontSize: '14px',
-  }
-};
+    <script>
+        // إعدادات شبكة Ritual Testnet
+        const RITUAL_TESTNET_PARAMS = {
+            chainId: '0x29A', 
+            chainName: 'Ritual Testnet',
+            rpcUrls: ['https://rpc.ritual.net'], 
+            nativeCurrency: { name: 'RITUAL', symbol: 'RITUAL', decimals: 18 },
+            blockExplorerUrls: ['https://explorer.ritual.net']
+        };
+
+        const CONTRACT_ADDRESS = "0x0000000000000000000000000000000000000000"; 
+        const CONTRACT_ABI = [
+            "function requestAvatar(string memory xUsername) external payable returns (bytes32)"
+        ];
+
+        let account = '';
+
+        async function connectWallet() {
+            if (!window.ethereum) {
+                alert("الرجاء تثبيت محفظة MetaMask أولاً!");
+                return;
+            }
+            try {
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                const signer = provider.getSigner();
+                account = await signer.getAddress();
+                
+                document.getElementById('connectBtn').innerText = account.substring(0, 6) + '...' + account.substring(account.length - 4);
+
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: RITUAL_TESTNET_PARAMS.chainId }],
+                    });
+                } catch (switchError) {
+                    if (switchError.code === 4902) {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [RITUAL_TESTNET_PARAMS],
+                        });
+                    }
+                }
+                document.getElementById('statusMessage').innerText = "تم ربط المحفظة بنجاح على شبكة Ritual!";
+            } catch (error) {
+                console.error(error);
+                document.getElementById('statusMessage').innerText = "فشل في ربط المحفظة.";
+            }
+        }
+
+        async function generateAvatar() {
+            const xUsername = document.getElementById('xUsername').value;
+            if (!account) {
+                alert("الرجاء ربط المحفظة أولاً!");
+                return;
+            }
+            if (!xUsername) {
+                alert("الرجاء إدخال اسم المستخدم في X!");
+                return;
+            }
+
+            try {
+                document.getElementById('statusMessage').innerText = "جاري إعداد المعاملة لتوليد الـ Avatar...";
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                const signer = provider.getSigner();
+                
+                const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+                
+                const tx = await contract.requestAvatar(xUsername, {
+                    value: ethers.utils.parseEther("0.0") 
+                });
+
+                document.getElementById('statusMessage').innerText = "جاري معالجة المعاملة على شبكة Ritual... انتظر قليلاً ⏳";
+                await tx.wait();
+
+                document.getElementById('statusMessage').innerText = "تم تأكيد المعاملة بنجاح! جاري طبخ الصورة بالذكاء الاصطناعي... 🍳";
+
+                setTimeout(() => {
+                    const mockImageUrl = "https://images.placeholders.dev/?width=400&height=400&text=LiTEino_Style_Generated";
+                    document.getElementById('avatarImage').src = mockImageUrl;
+                    document.getElementById('downloadBtn').href = mockImageUrl;
+                    document.getElementById('imageContainer').style.display = 'flex';
+                    document.getElementById('statusMessage').innerText = "جاهز! تم توليد صورتك الشخصية بنجاح 💎";
+                }, 5000);
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('statusMessage').innerText = "حدث خطأ أثناء إرسال المعاملة.";
+            }
+        }
+    </script>
+</body>
+</html>
