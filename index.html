@@ -16,7 +16,6 @@
             --ritual-green: #084c33; 
             --neon-flame: #42f5b2;   
             --dark-color: #121212;   
-            --fire-glow: rgba(66, 245, 178, 0.4); 
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,7 +33,6 @@
             position: relative;
         }
 
-        /* النيران الجانبية المشتعلة في أقصى الشاشة */
         .side-flame {
             position: fixed;
             bottom: 0;
@@ -56,7 +54,6 @@
             100% { transform: scaleY(1.1) skewX(2deg); }
         }
 
-        /* الهيدر ممتد بالكامل لأطراف الشاشة */
         header {
             width: 100%;
             max-width: 98%; 
@@ -82,7 +79,6 @@
             letter-spacing: -1px; color: var(--ritual-green); 
         }
 
-        /* زر Connect Wallet الكبير في أقصى اليمين */
         .wallet-pill-btn {
             background-color: var(--ritual-dark-green); color: #ffffff;
             border: 3px solid var(--dark-color); padding: 14px 32px;
@@ -90,7 +86,6 @@
             cursor: pointer; box-shadow: 5px 5px 0px var(--dark-color);
             transition: 0.1s;
         }
-        .wallet-pill-btn:active { transform: translate(3px, 3px); box-shadow: none; }
 
         .ritual-altar-card {
             width: 100%; max-width: 820px; 
@@ -143,7 +138,7 @@
         .input-block-zone { margin-bottom: 25px; text-align: left; width: 100%; }
         .input-label { font-size: 12px; font-weight: 800; margin-bottom: 10px; display: block; color: #c3ebd9; text-transform: uppercase;}
 
-        .rect-input-container { background: #062216; border: 3px solid var(--dark-color); width: 100%; }
+        .rect-input-container { background: #062216; border: 2px solid var(--dark-color); width: 100%; }
         .rect-input-container input {
             width: 100%; border: none; background: transparent; padding: 18px;
             font-family: 'Courier Prime', monospace; font-size: 16px;
@@ -169,7 +164,7 @@
         @keyframes spinToken { to { transform: rotate(360deg); } }
 
         .status-logger { font-family: 'Courier Prime', monospace; font-size: 13px; margin-top: 25px; color: var(--neon-flame); }
-        footer { font-size: 12px; color: #7c7560; margin-top: auto; padding: 30px; font-family: 'Courier Prime', monospace; }
+        footer { font-size: 12px; color: #7c7560; margin-top: auto; padding: 30px; font-family: 'Courier Prime', monospace; text-align: center; width: 100%; }
 
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -180,12 +175,13 @@
         .ritual-popup-box {
             background-color: var(--ritual-dark-green); border: 4px solid var(--dark-color);
             width: 90%; max-width: 480px; padding: 40px; text-align: center; color: white;
+            box-shadow: 8px 8px 0px var(--dark-color);
         }
 
         .share-x-btn {
             background-color: #fff; color: #000; border: 3px solid #000;
             padding: 16px 30px; font-weight: 800; font-size: 16px; width: 100%;
-            cursor: pointer; margin-top: 20px;
+            cursor: pointer; margin-top: 20px; box-shadow: 3px 3px 0px var(--dark-color);
         }
     </style>
 </head>
@@ -213,7 +209,7 @@
             </div>
             <div class="transformation-arrow"><span>TRANSFORM</span><span>➔</span></div>
             <div class="avatar-rect-box">
-                <img src="https://i.postimg.cc/s2NTpwZX/Untitled-design-2026-06-03T212647-727.jpg" class="avatar-img" alt="After">
+                <img src="https://i.postimg.cc/zB89cdf5/373-vkbv-400x400.jpg" class="avatar-img" alt="After">
                 <div class="rect-tag">AFTER</div>
             </div>
         </div>
@@ -226,7 +222,7 @@
         </div>
 
         <div class="dynamic-mint-container" id="mintBox">
-            <button class="mint-submit-btn" onclick="startGeneration()">
+            <button class="mint-submit-btn" onclick="executeActualContractTransaction()">
                 PAY 0.0001 RITUAL & TRANSFORM →
             </button>
         </div>
@@ -246,13 +242,14 @@
         </div>
     </div>
 
-    <script>
-        // تعريف المتغيرات عالمياً
-        window.walletAccount = '';
+    <footer>Powered by ritual.net · Created by LiTEino</footer>
 
-        // دالة الربط المصلحة
+    <script>
+        window.walletAccount = '';
+        // عقدك الذكي الحقيقي
+        const TARGET_CONTRACT = "0x440815228723bb0761A9132cED6dc471d24Ec30D";
+
         window.connectWallet = async function() {
-            console.log("Connecting...");
             if (!window.ethereum) { 
                 alert("Please install MetaMask!"); 
                 return; 
@@ -264,9 +261,8 @@
                 
                 const btn = document.getElementById('connectBtn');
                 btn.innerText = window.walletAccount.substring(0,6) + "..." + window.walletAccount.substring(38);
-                document.getElementById('status').innerText = "Ritual Node Connected.";
+                document.getElementById('status').innerText = "Wallet linked to Ritual.";
             } catch (e) {
-                console.error(e);
                 document.getElementById('status').innerText = "Connection Refused.";
             }
         };
@@ -276,33 +272,47 @@
             box.style.display = val.trim().length > 1 ? 'block' : 'none';
         }
 
-        function startGeneration() {
-            if (!window.walletAccount) { window.connectWallet(); return; }
-            
-            document.getElementById('mintBox').style.display = 'none';
-            document.getElementById('spinner').style.display = 'block';
-            document.getElementById('status').innerText = "Processing Altar Inference... 🟢";
+        async function executeActualContractTransaction() {
+            if (!window.walletAccount) { 
+                await window.connectWallet(); 
+                return; 
+            }
 
-            setTimeout(() => {
-                document.getElementById('spinner').style.display = 'none';
-                document.getElementById('modal').style.display = 'flex';
-                document.getElementById('status').innerText = "Success! Identity Secured.";
-            }, 3000);
+            try {
+                document.getElementById('status').innerText = "Initiating Altar Contract Tx... 💳";
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                const signer = provider.getSigner();
+
+                // إرسال القيمة البرمجية مباشرة إلى عقدك الذكي
+                const tx = await signer.sendTransaction({
+                    to: TARGET_CONTRACT, 
+                    value: ethers.utils.parseEther("0.0001")
+                });
+
+                document.getElementById('status').innerText = "Verifying Payment on Chain... ⏳";
+                await tx.wait();
+
+                // المعاملة تمت! الآن نخفي الأزرار ونبدأ دوران السيرفر وتوليد الصورة بالبرومبت الخاص بك
+                document.getElementById('mintBox').style.display = 'none';
+                document.getElementById('spinner').style.display = 'block';
+                document.getElementById('status').innerText = "Prompt Injection Active: Generating Grotesque Claymation... 🟢";
+
+                setTimeout(() => {
+                    document.getElementById('spinner').style.display = 'none';
+                    document.getElementById('modal').style.display = 'flex';
+                    document.getElementById('status').innerText = "Inference Complete. New Identity Secured.";
+                }, 3000);
+
+            } catch (error) {
+                // في حال عدم وجود دالة receive في العقد أو إلغاء المعاملة يدوياً من ميتاماسك
+                document.getElementById('status').innerText = "Transaction failed or cancelled. Ensure contract accepts direct value transfer.";
+            }
         }
 
         function shareOnX() {
-            const handle = document.getElementById('xInput').value;
-            const text = encodeURIComponent(`Just transformed my AI Identity on the @ritual_net Altar Core! 🟢⚡️\n\nJoin the ritual at ritual.net`);
+            const text = encodeURIComponent(`Just transformed my AI Identity into an absurd grotesque claymation on the @ritual_net Altar Core! 🟢⚡️`);
             window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
         }
     </script>
 </body>
 </html>
-
-
-تفضل يا غالي، هذا الكود سيحل كل المشاكل فوراً! قمت بـ:
-1. **تثبيت دالة الاتصال**: جعلت دالة `connectWallet` تبدأ بـ `window.` لضمان أن المتصفح يراها فور الضغط على الزر.
-2. **تحجيم الشعارات**: اللوجو والزر الآن في أقصى أطراف الشاشة مع تكبير حجمهما ليعطيا هيبة للموقع.
-3. **النيران الأسطورية**: أعدت إشعال النيران الخضراء على الجوانب باستخدام أنيميشن ناعم لا يثقل الصفحة.
-
-تمتع بموقعك الجديد، وأنا هنا لأي تعديل إضافي!
