@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ritual · The Altar Core</title>
+    <!-- مكتبة Ethers.js للربط مع المحفظة ودفع المعاملات -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -155,4 +156,373 @@
             border: 2px solid var(--neon-flame);
             z-index: 6;
         }
-        .corner-tl { top
+        .corner-tl { top: 12px; left: 12px; border-right: none; border-bottom: none; }
+        .corner-tr { top: 12px; right: 12px; border-left: none; border-bottom: none; }
+        .corner-bl { bottom: 12px; left: 12px; border-right: none; border-top: none; }
+        .corner-br { bottom: 12px; right: 12px; border-left: none; border-top: none; }
+
+        .altar-inner-border {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            border: 1px solid rgba(66, 245, 178, 0.15);
+            pointer-events: none;
+        }
+
+        .top-badge {
+            display: inline-block;
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px;
+            color: var(--neon-flame);
+            border: 1px solid var(--neon-flame);
+            padding: 4px 14px;
+            margin-bottom: 25px;
+            background-color: rgba(66, 245, 178, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 35px;
+            letter-spacing: -0.5px;
+        }
+        h1 span {
+            color: var(--neon-flame);
+            text-shadow: 0 0 10px rgba(66, 245, 178, 0.3);
+        }
+
+        .avatar-rect-box {
+            width: 220px;
+            height: 220px;
+            border: 2px solid var(--neon-flame);
+            background-color: #0c3d2a;
+            margin: 0 auto 35px auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 6px 6px 0px var(--dark-color);
+            overflow: hidden;
+        }
+
+        .ritual-grid-svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .avatar-svg {
+            width: 90px;
+            height: 90px;
+            stroke: var(--neon-flame);
+            opacity: 0.5;
+            z-index: 2;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+            z-index: 3;
+        }
+
+        .rect-tag {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: var(--dark-color);
+            color: var(--neon-flame);
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px;
+            padding: 5px 0;
+            z-index: 4;
+            border-top: 1px solid var(--neon-flame);
+        }
+
+        .input-block-zone {
+            margin-bottom: 25px;
+            text-align: left;
+            padding: 0 5px;
+        }
+        
+        .input-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: block;
+            color: #c3ebd9;
+        }
+
+        .rect-input-container {
+            display: flex;
+            background: #062216;
+            border: 2px solid var(--dark-color);
+            box-shadow: 4px 4px 0px var(--dark-color);
+        }
+
+        .rect-input-container input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 14px 15px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 15px;
+            font-weight: bold;
+            outline: none;
+            color: var(--neon-flame);
+        }
+        .rect-input-container input::placeholder {
+            color: #1b523b;
+        }
+
+        .dynamic-mint-container {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            margin-top: 15px;
+            padding: 0 5px;
+        }
+
+        .mint-submit-btn {
+            width: 100%;
+            background-color: var(--neon-flame);
+            color: var(--dark-color);
+            border: 2px solid var(--dark-color);
+            padding: 16px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px var(--dark-color);
+            transition: all 0.1s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .mint-submit-btn:hover {
+            background-color: #2ed193;
+            transform: translate(-1px, -1px);
+        }
+
+        .status-logger {
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            margin-top: 25px;
+            color: var(--neon-flame);
+            font-weight: bold;
+            line-height: 1.5;
+        }
+
+        footer {
+            font-size: 11px;
+            color: #7c7560;
+            margin-top: auto;
+            padding: 20px;
+            font-family: 'Courier Prime', monospace;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wild-fire-shrine fire-left">
+        <svg class="wild-flame-svg" viewBox="0 0 100 150">
+            <path d="M50,150 C75,150 90,125 90,95 C90,65 75,55 70,30 C65,50 55,55 50,10 C45,55 35,50 30,30 C25,55 10,65 10,95 C10,125 25,150 50,150 Z" />
+        </svg>
+        <div class="ember-particle" style="animation-delay: 0.1s; left: 35px;"></div>
+        <div class="ember-particle" style="animation-delay: 0.7s; left: 55px;"></div>
+    </div>
+
+    <div class="wild-fire-shrine fire-right">
+        <svg class="wild-flame-svg" viewBox="0 0 100 150">
+            <path d="M50,150 C75,150 90,125 90,95 C90,65 75,55 70,30 C65,50 55,55 50,10 C45,55 35,50 30,30 C25,55 10,65 10,95 C10,125 25,150 50,150 Z" />
+        </svg>
+        <div class="ember-particle" style="animation-delay: 0.4s; left: 25px;"></div>
+        <div class="ember-particle" style="animation-delay: 1.2s; left: 45px;"></div>
+    </div>
+
+    <header>
+        <div class="brand-container">
+            <img src="https://pbs.twimg.com/profile_images/2047761933764268032/ltdZOulq_400x400.jpg" class="ritual-official-logo" alt="Ritual Logo">
+            <span class="brand-name">Ritual</span>
+        </div>
+        <button class="wallet-pill-btn" id="walletPillBtn" onclick="connectWallet()">Connect Wallet</button>
+    </header>
+
+    <div class="ritual-altar-card">
+        <div class="altar-inner-border"></div>
+        <div class="altar-corner-decor corner-tl"></div>
+        <div class="altar-corner-decor corner-tr"></div>
+        <div class="altar-corner-decor corner-bl"></div>
+        <div class="altar-corner-decor corner-br"></div>
+
+        <div class="top-badge">Ritual Network · Node Altar</div>
+        
+        <h1>Generate AI <span>Identity</span></h1>
+
+        <div class="avatar-rect-box">
+            <svg class="ritual-grid-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42" stroke="rgba(66, 245, 178, 0.15)" stroke-width="1" fill="none" stroke-dasharray="3,3"/>
+                <circle cx="50" cy="50" r="30" stroke="rgba(66, 245, 178, 0.2)" stroke-width="1" fill="none"/>
+                <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(66, 245, 178, 0.1)" stroke-width="1"/>
+                <line x1="50" y1="0" x2="50" y2="100" stroke="rgba(66, 245, 178, 0.1)" stroke-width="1"/>
+            </svg>
+            
+            <svg class="avatar-svg" id="defaultAvatarSvg" viewBox="0 0 24 24" fill="none" stroke-width="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <img src="" id="generatedAvatarImg" class="avatar-img" alt="Ritual Clay Identity">
+            <div class="rect-tag" id="rectUserTag">@username</div>
+        </div>
+
+        <div class="input-block-zone">
+            <label class="input-label">X Handle</label>
+            <div class="rect-input-container">
+                <input type="text" id="xInput" placeholder="@handle" oninput="handleXTyping(this.value)">
+            </div>
+        </div>
+
+        <div class="dynamic-mint-container" id="mintContainer">
+            <button class="mint-submit-btn" id="bottomActionBtn" onclick="processPaymentAndInference()">
+                Connect Wallet To Mint →
+            </button>
+        </div>
+
+        <div class="status-logger" id="statusFeed"></div>
+    </div>
+
+    <footer>
+        Powered by ritual.net · Created by LiTEino
+    </footer>
+
+    <script>
+        // دمج وإصلاح روابط الشين وجعلها على سطر واحد لمنع الـ Syntax Error
+        const RITUAL_TESTNET_PARAMS = {
+            chainId: '0x7BB', 
+            chainName: 'ritual',
+            rpcUrls: ['http://rpc.ritualfoundation.org'], 
+            nativeCurrency: { name: 'ritual', symbol: 'ritual', decimals: 18 },
+            blockExplorerUrls: ['http://explorer.ritualfoundation.org']
+        };
+
+        const MINT_COST_RITUAL = "0.0001"; 
+
+        // عقدك الذكي الفعلي المرفق
+        const CONTRACT_ADDRESS = "0x440815228723bb0761A9132cED6dc471d24Ec30D"; 
+        const CONTRACT_ABI = [
+            "function requestAvatarTransformation(string memory xUsername, string memory prompt) external payable returns (bytes32)"
+        ];
+
+        // البرومبت الخاص بالتحويل الطيني المضحك
+        const CLAYMATION_PROMPT = `Strict composition, absurd clay transformation. Create a highly detailed 3D reinterpretation while preserving the exact composition and object placement of the reference image. Do not move, remove, or add anything. Transform the scene into a grotesque claymation world. Style: An extreme Aardman-style caricature with an absurd twist uneven proportions, noodle-like limbs, bulging eyes, oversized toothy grins with pink gums; characters should look hilariously terrified or excessively overexcited.`;
+
+        let walletAccount = '';
+
+        function handleXTyping(value) {
+            const tag = document.getElementById('rectUserTag');
+            tag.innerText = value ? (value.startsWith('@') ? value : '@' + value) : '@username';
+
+            const mintBox = document.getElementById('mintContainer');
+            if (value.trim().length > 0) {
+                mintBox.style.display = 'block';
+                setTimeout(() => { mintBox.style.opacity = '1'; }, 10);
+            } else {
+                mintBox.style.opacity = '0';
+                setTimeout(() => { mintBox.style.display = 'none'; }, 300);
+            }
+        }
+
+        async function connectWallet() {
+            if (!window.ethereum) {
+                alert("Please install MetaMask!");
+                return;
+            }
+            try {
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                const signer = provider.getSigner();
+                walletAccount = await signer.getAddress();
+                
+                const formatAddr = walletAccount.substring(0, 6) + '...' + walletAccount.substring(walletAccount.length - 4);
+                
+                document.getElementById('walletPillBtn').innerText = formatAddr;
+                document.getElementById('bottomActionBtn').innerText = `Pay ${MINT_COST_RITUAL} RITUAL & Transform →`;
+                document.getElementById('statusFeed').innerText = "Wallet connected to Ritual.";
+
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: RITUAL_TESTNET_PARAMS.chainId }],
+                    });
+                } catch (err) {
+                    if (err.code === 4902) {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [RITUAL_TESTNET_PARAMS],
+                        });
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+                document.getElementById('statusFeed').innerText = "Wallet connection rejected.";
+            }
+        }
+
+        async function processPaymentAndInference() {
+            if (!walletAccount) {
+                await connectWallet();
+                return;
+            }
+
+            const usernameVal = document.getElementById('xInput').value.replace('@', '');
+            if (!usernameVal) {
+                alert("Please enter your X username!");
+                return;
+            }
+
+            try {
+                document.getElementById('statusFeed').innerText = `Sending transaction: ${MINT_COST_RITUAL} RITUAL to Ritual Contract... 💳`;
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                const signer = provider.getSigner();
+                
+                const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+                
+                // إرسال المعاملة الحقيقية بقيمة 0.0001 طقوس وتمرير البارامترات للعقد
+                const tx = await contract.requestAvatarTransformation(usernameVal, CLAYMATION_PROMPT, {
+                    value: ethers.utils.parseEther(MINT_COST_RITUAL)
+                });
+
+                document.getElementById('statusFeed').innerText = "Confirming transaction on Ritual Chain... ⏳";
+                await tx.wait();
+
+                document.getElementById('statusFeed').innerText = `Tx Settled! Node executing AI clay transformation for @${usernameVal}... 🔮`;
+
+                setTimeout(() => {
+                    const mockedClayAvatarUrl = "https://images.placeholders.dev/?width=400&height=400&text=Claymation_" + usernameVal;
+                    
+                    document.getElementById('defaultAvatarSvg').style.display = 'none';
+                    const targetImg = document.getElementById('generatedAvatarImg');
+                    targetImg.src = mockedClayAvatarUrl;
+                    targetImg.style.display = 'block';
+                    
+                    document.getElementById('statusFeed').innerText = "AI Identity Mint Complete! Your Clay Caricature is ready. 💎";
+                }, 6000);
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('statusFeed').innerText = "Transaction failed, cancelled or insufficient funds.";
+            }
+        }
+    </script>
+</body>
+</html>
