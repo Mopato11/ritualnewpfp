@@ -33,6 +33,7 @@
             position: relative;
         }
 
+        /* النيران الجانبية المشتعلة في أطراف الشاشة */
         .side-flame {
             position: fixed;
             bottom: 0;
@@ -86,6 +87,7 @@
             cursor: pointer; box-shadow: 5px 5px 0px var(--dark-color);
             transition: 0.1s;
         }
+        .wallet-pill-btn:active { transform: translate(3px, 3px); box-shadow: none; }
 
         .ritual-altar-card {
             width: 100%; max-width: 820px; 
@@ -138,7 +140,7 @@
         .input-block-zone { margin-bottom: 25px; text-align: left; width: 100%; }
         .input-label { font-size: 12px; font-weight: 800; margin-bottom: 10px; display: block; color: #c3ebd9; text-transform: uppercase;}
 
-        .rect-input-container { background: #062216; border: 2px solid var(--dark-color); width: 100%; }
+        .rect-input-container { background: #062216; border: 3px solid var(--dark-color); width: 100%; }
         .rect-input-container input {
             width: 100%; border: none; background: transparent; padding: 18px;
             font-family: 'Courier Prime', monospace; font-size: 16px;
@@ -209,7 +211,7 @@
             </div>
             <div class="transformation-arrow"><span>TRANSFORM</span><span>➔</span></div>
             <div class="avatar-rect-box">
-                <img src="https://i.postimg.cc/zB89cdf5/373-vkbv-400x400.jpg" class="avatar-img" alt="After">
+                <img src="https://i.postimg.cc/mD8VjH3H/Untitled-design-2026-06-03-T212647-727.jpg" class="avatar-img" alt="After" id="previewAfterImg">
                 <div class="rect-tag">AFTER</div>
             </div>
         </div>
@@ -235,7 +237,7 @@
         <div class="ritual-popup-box">
             <h2 style="color:var(--neon-flame); margin-bottom:20px;">AI TRANSFORMATION COMPLETE!</h2>
             <div class="avatar-rect-box" style="margin:0 auto 25px auto;">
-                <img src="https://i.postimg.cc/s2NTpwZX/Untitled-design-2026-06-03T212647-727.jpg" class="avatar-img">
+                <img src="https://i.postimg.cc/mD8VjH3H/Untitled-design-2026-06-03-T212647-727.jpg" class="avatar-img" id="popupResultImg">
             </div>
             <button class="share-x-btn" onclick="shareOnX()">SHARE ON X (TWITTER) 🐦</button>
             <p style="margin-top:20px; cursor:pointer; color:#7c7560;" onclick="document.getElementById('modal').style.display='none'">[ Close Altar ]</p>
@@ -246,7 +248,6 @@
 
     <script>
         window.walletAccount = '';
-        // عقدك الذكي الحقيقي
         const TARGET_CONTRACT = "0x440815228723bb0761A9132cED6dc471d24Ec30D";
 
         window.connectWallet = async function() {
@@ -278,12 +279,18 @@
                 return; 
             }
 
+            const handleVal = document.getElementById('xInput').value.trim();
+            if(!handleVal) {
+                alert("Please enter your X Handle first!");
+                return;
+            }
+
             try {
                 document.getElementById('status').innerText = "Initiating Altar Contract Tx... 💳";
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const signer = provider.getSigner();
 
-                // إرسال القيمة البرمجية مباشرة إلى عقدك الذكي
+                // إرسال المعاملة الحقيقية مباشرة إلى عنوان العقد الذكي الخاص بك
                 const tx = await signer.sendTransaction({
                     to: TARGET_CONTRACT, 
                     value: ethers.utils.parseEther("0.0001")
@@ -292,19 +299,23 @@
                 document.getElementById('status').innerText = "Verifying Payment on Chain... ⏳";
                 await tx.wait();
 
-                // المعاملة تمت! الآن نخفي الأزرار ونبدأ دوران السيرفر وتوليد الصورة بالبرومبت الخاص بك
+                // بمجرد نجاح الدفع على البلوكشين، تختفي الواجهات لتبدأ عملية المحاكاة والتوليد
                 document.getElementById('mintBox').style.display = 'none';
                 document.getElementById('spinner').style.display = 'block';
-                document.getElementById('status').innerText = "Prompt Injection Active: Generating Grotesque Claymation... 🟢";
+                document.getElementById('status').innerText = "Prompt Active: Generating Grotesque Claymation for " + handleVal + "... 🟢";
+
+                // --- BACKEND INTEGRATION HERE ---
+                // هنا يمكنك مستقبلاً استدعاء الـ API الخاص بسيرفر توليد الذكاء الاصطناعي الخاص بك:
+                // مثال: fetch('https://your-backend.com/api/generate', { method: 'POST', body: JSON.stringify({ handle: handleVal }) })
+                // --------------------------------
 
                 setTimeout(() => {
                     document.getElementById('spinner').style.display = 'none';
                     document.getElementById('modal').style.display = 'flex';
                     document.getElementById('status').innerText = "Inference Complete. New Identity Secured.";
-                }, 3000);
+                }, 3500);
 
             } catch (error) {
-                // في حال عدم وجود دالة receive في العقد أو إلغاء المعاملة يدوياً من ميتاماسك
                 document.getElementById('status').innerText = "Transaction failed or cancelled. Ensure contract accepts direct value transfer.";
             }
         }
