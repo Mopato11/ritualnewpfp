@@ -33,7 +33,7 @@
             position: relative;
         }
 
-        /* تأثير النيران الجانبية */
+        /* النيران الجانبية المشتعلة في الأطراف */
         .side-flame {
             position: fixed;
             bottom: 0;
@@ -68,11 +68,9 @@
         .brand-container { display: flex; align-items: center; gap: 16px; }
 
         .ritual-official-logo {
-            width: 54px; height: 54px;
-            border: 2.5px solid var(--dark-color);
+            width: 44px; height: 44px;
             border-radius: 50%;
             object-fit: cover;
-            box-shadow: 2px 2px 0px var(--dark-color);
         }
 
         .brand-name {
@@ -81,7 +79,7 @@
         }
 
         .wallet-pill-btn {
-            background-color: var(--ritual-green); color: #ffffff;
+            background-color: var(--ritual-dark-green); color: #ffffff;
             border: 2.5px solid var(--dark-color); padding: 12px 28px;
             border-radius: 35px; font-weight: 700; font-size: 16px;
             cursor: pointer; box-shadow: 4px 4px 0px var(--dark-color);
@@ -155,12 +153,12 @@
             text-transform: uppercase;
         }
 
-        /* تنسيق دائرة الانتظار المتحركة (Spinner) */
+        /* تصميم الـ Spinner الدائري المتحرك لتوليد الصورة كما طلبته */
         .generation-spinner {
-            display: none; width: 50px; height: 50px;
-            border: 5px solid rgba(66, 245, 178, 0.2);
+            display: none; width: 60px; height: 60px;
+            border: 6px solid rgba(66, 245, 178, 0.2);
             border-radius: 50%; border-top-color: var(--neon-flame);
-            margin: 20px auto; animation: spinToken 1s linear infinite;
+            margin: 30px auto; animation: spinToken 1s linear infinite;
         }
 
         @keyframes spinToken {
@@ -171,7 +169,7 @@
         .status-logger { font-family: 'Courier Prime', monospace; font-size: 12px; margin-top: 20px; color: var(--neon-flame); }
         footer { font-size: 11px; color: #7c7560; margin-top: auto; padding: 20px; font-family: 'Courier Prime', monospace; z-index: 10;}
 
-        /* تنسيق النافذة المنبثقة التفاعلية (Popup Modal) */
+        /* نافذة العرض والمشاركة المنبثقة (Popup Modal) */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(18, 18, 18, 0.85); display: flex; align-items: center;
@@ -188,20 +186,20 @@
         .popup-title { font-size: 24px; font-weight: 800; color: var(--neon-flame); margin-bottom: 20px; }
         
         .popup-avatar-preview {
-            width: 180px; height: 180px; border: 2px solid var(--neon-flame);
+            width: 200px; height: 200px; border: 2px solid var(--neon-flame);
             margin: 0 auto 20px auto; overflow: hidden; box-shadow: 4px 4px 0px var(--dark-color);
         }
 
         .share-x-btn {
             background-color: #ffffff; color: var(--dark-color); border: 2px solid var(--dark-color);
-            padding: 12px 24px; font-weight: 800; font-size: 14px; border-radius: 6px;
+            padding: 14px 24px; font-weight: 800; font-size: 15px; border-radius: 6px;
             cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
             box-shadow: 3px 3px 0px var(--dark-color); text-transform: uppercase; width: 100%; justify-content: center;
         }
 
         .close-popup-btn {
             position: absolute; top: 10px; right: 15px; background: transparent;
-            border: none; color: #7c7560; font-size: 22px; cursor: pointer; font-weight: bold;
+            border: none; color: #7c7560; font-size: 24px; cursor: pointer; font-weight: bold;
         }
     </style>
 </head>
@@ -212,7 +210,7 @@
 
     <header>
         <div class="brand-container">
-            <img src="https://pbs.twimg.com/profile_images/2047761933764268032/ltdZOulq_400x400.jpg" class="ritual-official-logo" alt="Ritual Official Logo">
+            <img src="https://pbs.twimg.com/profile_images/2047761933764268032/ltdZOulq_400x400.jpg" class="ritual-official-logo" alt="Ritual">
             <span class="brand-name">Ritual</span>
         </div>
         <button class="wallet-pill-btn" id="walletPillBtn" onclick="connectWallet()">Connect Wallet</button>
@@ -223,19 +221,16 @@
         <h1>Generate AI <span>Identity</span></h1>
 
         <div class="identity-comparison-zone">
-            <!-- قبل -->
             <div class="avatar-rect-box">
                 <img src="https://i.postimg.cc/zB89cdf5/373-vkbv-400x400.jpg" class="avatar-img" alt="Before">
                 <div class="rect-tag">BEFORE</div>
             </div>
 
-            <!-- السهم التوجيهي -->
             <div class="transformation-arrow">
                 <span>TRANSFORM</span>
                 <span>➔</span>
             </div>
 
-            <!-- بعد -->
             <div class="avatar-rect-box">
                 <img src="https://i.postimg.cc/s2NTpwZX/Untitled-design-2026-06-03T212647-727.jpg" class="avatar-img" alt="After">
                 <div class="rect-tag">AFTER</div>
@@ -251,17 +246,15 @@
 
         <div class="dynamic-mint-container" id="mintContainer">
             <button class="mint-submit-btn" id="bottomActionBtn" onclick="processPaymentAndInference()">
-                Pay 0.0001 RITUAL & Transform →
+                PAY 0.0001 RITUAL & TRANSFORM →
             </button>
         </div>
 
-        <!-- دائرة التحميل تدور هنا تدل على توليد الصورة -->
         <div class="generation-spinner" id="spinner"></div>
 
         <div class="status-logger" id="statusFeed"></div>
     </div>
 
-    <!-- النافذة المنبثقة التفاعلية للمشاركة وتقديم الصورة -->
     <div class="modal-overlay" id="popupModal">
         <div class="ritual-popup-box">
             <button class="close-popup-btn" onclick="closePopup()">×</button>
@@ -284,9 +277,6 @@
             rpcUrls: ['http://rpc.ritualfoundation.org'], 
             nativeCurrency: { name: 'ritual', symbol: 'ritual', decimals: 18 }
         };
-
-        const MINT_COST_RITUAL = "0.0001"; 
-        const CONTRACT_ADDRESS = "0x440815228723bb0761A9132cED6dc471d24Ec30D"; 
 
         let walletAccount = '';
 
@@ -314,62 +304,4 @@
                 try {
                     await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: RITUAL_TESTNET_PARAMS.chainId }] });
                 } catch (err) {
-                    if (err.code === 4902) { await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [RITUAL_TESTNET_PARAMS] }); }
-                }
-            } catch (e) { document.getElementById('statusFeed').innerText = "Connection rejected."; }
-        }
-
-        async function processPaymentAndInference() {
-            if (!walletAccount) { await connectWallet(); return; }
-            const usernameVal = document.getElementById('xInput').value.replace('@', '');
-            if (!usernameVal) { alert("Please enter your X username!"); return; }
-
-            try {
-                document.getElementById('statusFeed').innerText = "Sending payment transaction... 💳";
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                const signer = provider.getSigner();
-
-                // إصلاح المعاملة لتمرير القيمة مباشرة إلى عنوان العقد لتمر بسرعة وتنجح بدون مشاكل الـ ABI في Remix
-                const tx = await signer.sendTransaction({
-                    to: CONTRACT_ADDRESS,
-                    value: ethers.utils.parseEther(MINT_COST_RITUAL)
-                });
-                
-                document.getElementById('statusFeed').innerText = "Confirming on-chain transaction... ⏳";
-                await tx.wait();
-
-                // المعاملة اكتملت بنجاح وسرعة! نقوم الآن بإخفاء زر الدفع وعرض دائرة توليد الصورة المتحركة
-                document.getElementById('mintContainer').style.display = 'none';
-                document.getElementById('spinner').style.display = 'block';
-                document.getElementById('statusFeed').innerText = "Generating AI Identity... Please wait 🟢";
-
-                // محاكاة اكتمال توليد الصورة الفني بعد 3 ثوانٍ وعرض الـ Popup
-                setTimeout(() => {
-                    document.getElementById('spinner').style.display = 'none';
-                    document.getElementById('statusFeed').innerText = "AI Identity Mint Complete! Your Clay Profile is Secure. 💎";
-                    openPopup();
-                }, 3000);
-
-            } catch (err) { 
-                console.error(err);
-                document.getElementById('statusFeed').innerText = "Transaction failed or cancelled."; 
-            }
-        }
-
-        function openPopup() {
-            document.getElementById('popupModal').classList.add('active');
-        }
-
-        function closePopup() {
-            document.getElementById('popupModal').classList.remove('active');
-        }
-
-        function shareOnX() {
-            const usernameVal = document.getElementById('xInput').value;
-            const text = encodeURIComponent(`Just transformed my AI Identity into Claymation on the @ritual_net Altar Core! 🟢⚡️\n\nMade by LiTEino.`);
-            const url = "https://twitter.com/intent/tweet?text=" + text;
-            window.open(url, '_blank');
-        }
-    </script>
-</body>
-</html>
+                    if (err.
