@@ -190,15 +190,6 @@
             position: absolute; top: 10px; right: 15px; background: transparent;
             border: none; color: #7c7560; font-size: 22px; cursor: pointer; font-weight: bold;
         }
-
-        @media (max-width: 650px) {
-            header { max-width: 100%; padding: 15px 0; }
-            .brand-name { font-size: 28px; }
-            .wallet-pill-btn { padding: 10px 20px; font-size: 14px; }
-            .identity-comparison-zone { flex-direction: column; gap: 15px; }
-            .transformation-arrow { transform: rotate(90deg); margin: 10px 0; }
-            .side-flame { width: 40px; height: 150px; }
-        }
     </style>
 </head>
 <body>
@@ -219,19 +210,16 @@
         <h1>Generate AI <span>Identity</span></h1>
 
         <div class="identity-comparison-zone">
-            <!-- قبل -->
             <div class="avatar-rect-box">
                 <img src="https://i.postimg.cc/zB89cdf5/373-vkbv-400x400.jpg" class="avatar-img" alt="Before">
                 <div class="rect-tag">BEFORE</div>
             </div>
 
-            <!-- السهم التوجيهي -->
             <div class="transformation-arrow">
                 <span>TRANSFORM</span>
                 <span>➔</span>
             </div>
 
-            <!-- بعد (ثابتة وجاهزة وتظهر فوراً بدون إخفاء برمجى آلي) -->
             <div class="avatar-rect-box">
                 <img src="https://i.postimg.cc/s2NTpwZX/Untitled-design-2026-06-03T212647-727.jpg" class="avatar-img" alt="After">
                 <div class="rect-tag">AFTER</div>
@@ -254,7 +242,6 @@
         <div class="status-logger" id="statusFeed"></div>
     </div>
 
-    <!-- النافذة المنبثقة للتوليد والمشاركة على X -->
     <div class="modal-overlay" id="popupModal">
         <div class="ritual-popup-box">
             <button class="close-popup-btn" onclick="closePopup()">×</button>
@@ -325,16 +312,22 @@
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider.getSigner());
                 
-                const tx = await contract.requestAvatarTransformation(usernameVal, CLAYMATION_PROMPT, { value: ethers.utils.parseEther(MINT_COST_RITUAL) });
+                // إضافة gasLimit يدوياً لتفادي رفض MetaMask التلقائي للشبكات الاختبارية المصممة بـ Remix
+                const tx = await contract.requestAvatarTransformation(usernameVal, CLAYMATION_PROMPT, { 
+                    value: ethers.utils.parseEther(MINT_COST_RITUAL),
+                    gasLimit: 150000 
+                });
+                
                 document.getElementById('statusFeed').innerText = "Confirming transaction on chain... ⏳";
                 await tx.wait();
 
                 document.getElementById('statusFeed').innerText = "AI Identity Mint Complete! Your Clay Profile is Secure. 💎";
                 
-                // فتح النافذة المنبثقة فور نجاح المعاملة الفعلي على البلوكشين
+                // فتح النافذة المنبثقة التفاعلية فور نجاح المعاملة
                 openPopup();
 
             } catch (err) { 
+                console.error(err);
                 document.getElementById('statusFeed').innerText = "Transaction failed or cancelled."; 
             }
         }
