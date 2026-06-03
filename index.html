@@ -16,6 +16,7 @@
             --ritual-green: #084c33; 
             --neon-flame: #42f5b2;   
             --dark-color: #121212;   
+            --fire-glow: rgba(66, 245, 178, 0.3);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,45 +29,94 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 10px 20px;
+            overflow-x: hidden;
+            position: relative;
         }
 
+        /* تأثير النيران الجانبية المشتعلة والخفيفة */
+        .side-flame {
+            position: fixed;
+            bottom: 0;
+            width: 80px;
+            height: 250px;
+            background: linear-gradient(to top, var(--ritual-green), var(--neon-flame), transparent);
+            clip-path: polygon(50% 0%, 100% 70%, 70% 100%, 30% 100%, 0% 70%);
+            filter: blur(8px) drop-shadow(0 0 15px var(--neon-flame));
+            opacity: 0.6;
+            animation: flameWobble 1.5s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .flame-left { left: 10px; transform-origin: bottom left; }
+        .flame-right { right: 10px; transform-origin: bottom right; }
+
+        @keyframes flameWobble {
+            0% { transform: scaleY(0.9) skewX(-3deg); opacity: 0.5; }
+            100% { transform: scaleY(1.1) skewX(3deg); opacity: 0.7; }
+        }
+
+        /* تعديل الهيدر ليمتد لأقصى أطراف الشاشة وتكبير العناصر */
         header {
             width: 100%;
-            max-width: 820px;
+            max-width: 96%; 
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 0;
+            padding: 25px 0;
+            z-index: 10;
         }
 
-        .brand-container { display: flex; align-items: center; gap: 12px; }
+        .brand-container { display: flex; align-items: center; gap: 16px; }
 
+        /* تكبير لوجو ريتشوال الجديد */
         .ritual-official-logo {
-            width: 40px; height: 40px;
-            border: 2px solid var(--dark-color);
+            width: 54px; 
+            height: 54px;
+            border: 2.5px solid var(--dark-color);
             border-radius: 50%;
             object-fit: cover;
+            box-shadow: 2px 2px 0px var(--dark-color);
         }
 
+        /* تكبير اسم ريتشوال */
         .brand-name {
-            font-weight: 800; font-size: 26px; 
+            font-weight: 800; 
+            font-size: 36px; 
+            letter-spacing: -0.5px;
             color: var(--ritual-green); 
         }
 
+        /* تكبير زر المحفظة وتبريزه */
         .wallet-pill-btn {
-            background-color: var(--ritual-green); color: #ffffff;
-            border: 2px solid var(--dark-color); padding: 8px 20px;
-            border-radius: 30px; font-weight: 600; font-size: 13px;
-            cursor: pointer; box-shadow: 2px 2px 0px var(--dark-color);
+            background-color: var(--ritual-green); 
+            color: #ffffff;
+            border: 2.5px solid var(--dark-color); 
+            padding: 12px 28px;
+            border-radius: 35px; 
+            font-weight: 700; 
+            font-size: 16px;
+            cursor: pointer; 
+            box-shadow: 4px 4px 0px var(--dark-color);
+            transition: all 0.15s ease;
+        }
+        .wallet-pill-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px var(--dark-color);
         }
 
         .ritual-altar-card {
-            width: 100%; max-width: 820px; 
+            width: 100%; 
+            max-width: 820px; 
             background-color: var(--ritual-dark-green);
-            border: 3px solid var(--dark-color); padding: 40px 30px;
-            margin-top: 10px; box-shadow: 8px 8px 0px var(--dark-color);
-            text-align: center; color: #ffffff; position: relative;
+            border: 3px solid var(--dark-color); 
+            padding: 40px 30px;
+            margin-top: 15px; 
+            box-shadow: 10px 10px 0px var(--dark-color);
+            text-align: center; 
+            color: #ffffff; 
+            position: relative;
+            z-index: 5;
         }
 
         .top-badge {
@@ -77,7 +127,7 @@
             text-transform: uppercase;
         }
 
-        h1 { font-size: 32px; font-weight: 800; margin-bottom: 35px; }
+        h1 { font-size: 34px; font-weight: 800; margin-bottom: 35px; }
         h1 span { color: var(--neon-flame); }
 
         .identity-comparison-zone {
@@ -97,7 +147,6 @@
 
         .avatar-img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* تنسيق السهم المصلح والمحاذي للمنتصف */
         .transformation-arrow {
             color: var(--neon-flame); 
             font-family: 'Courier Prime', monospace;
@@ -137,19 +186,28 @@
         }
 
         .status-logger { font-family: 'Courier Prime', monospace; font-size: 12px; margin-top: 20px; color: var(--neon-flame); }
-        footer { font-size: 11px; color: #7c7560; margin-top: auto; padding: 20px; font-family: 'Courier Prime', monospace; }
+        footer { font-size: 11px; color: #7c7560; margin-top: auto; padding: 20px; font-family: 'Courier Prime', monospace; z-index: 10;}
 
-        @media (max-width: 600px) {
+        @media (max-width: 650px) {
+            header { max-width: 100%; padding: 15px 0; }
+            .brand-name { font-size: 28px; }
+            .wallet-pill-btn { padding: 10px 20px; font-size: 14px; }
             .identity-comparison-zone { flex-direction: column; gap: 15px; }
             .transformation-arrow { transform: rotate(90deg); margin: 10px 0; }
+            .side-flame { width: 40px; height: 150px; }
         }
     </style>
 </head>
 <body>
 
+    <!-- عناصر النيران الجانبية المشتعلة -->
+    <div class="side-flame flame-left"></div>
+    <div class="side-flame flame-right"></div>
+
     <header>
         <div class="brand-container">
-            <img src="https://i.postimg.cc/zB89cdf5/373-vkbv-400x400.jpg" class="ritual-official-logo" alt="Logo">
+            <!-- تم تحديث الرابط إلى شعار ريتشوال الرسمي المطلق والمطلوب -->
+            <img src="https://pbs.twimg.com/profile_images/2047761933764268032/ltdZOulq_400x400.jpg" class="ritual-official-logo" alt="Ritual Official Logo">
             <span class="brand-name">Ritual</span>
         </div>
         <button class="wallet-pill-btn" id="walletPillBtn" onclick="connectWallet()">Connect Wallet</button>
@@ -160,16 +218,19 @@
         <h1>Generate AI <span>Identity</span></h1>
 
         <div class="identity-comparison-zone">
+            <!-- قبل -->
             <div class="avatar-rect-box">
                 <img src="https://i.postimg.cc/zB89cdf5/373-vkbv-400x400.jpg" class="avatar-img" alt="Before">
                 <div class="rect-tag">BEFORE</div>
             </div>
 
+            <!-- السهم التوجيهي -->
             <div class="transformation-arrow">
                 <span>TRANSFORM</span>
                 <span>➔</span>
             </div>
 
+            <!-- بعد -->
             <div class="avatar-rect-box after-box" id="afterBoxOuter">
                 <img src="https://i.postimg.cc/s2NTpwZX/Untitled-design-2026-06-03T212647-727.jpg" id="generatedAvatarImg" class="avatar-img" alt="After">
                 <div class="rect-tag" id="afterTag">AFTER</div>
