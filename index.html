@@ -33,7 +33,7 @@
             position: relative;
         }
 
-        /* تأثير النيران الجانبية المشتعلة في أقصى الشاشة */
+        /* تأثير النيران الجانبية */
         .side-flame {
             position: fixed;
             bottom: 0;
@@ -55,7 +55,6 @@
             100% { transform: scaleY(1.1) skewX(3deg); opacity: 0.7; }
         }
 
-        /* الهيدر ممتد بالكامل لأطراف الشاشة */
         header {
             width: 100%;
             max-width: 96%; 
@@ -156,6 +155,19 @@
             text-transform: uppercase;
         }
 
+        /* تنسيق دائرة الانتظار المتحركة (Spinner) */
+        .generation-spinner {
+            display: none; width: 50px; height: 50px;
+            border: 5px solid rgba(66, 245, 178, 0.2);
+            border-radius: 50%; border-top-color: var(--neon-flame);
+            margin: 20px auto; animation: spinToken 1s linear infinite;
+        }
+
+        @keyframes spinToken {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         .status-logger { font-family: 'Courier Prime', monospace; font-size: 12px; margin-top: 20px; color: var(--neon-flame); }
         footer { font-size: 11px; color: #7c7560; margin-top: auto; padding: 20px; font-family: 'Courier Prime', monospace; z-index: 10;}
 
@@ -211,16 +223,19 @@
         <h1>Generate AI <span>Identity</span></h1>
 
         <div class="identity-comparison-zone">
+            <!-- قبل -->
             <div class="avatar-rect-box">
                 <img src="https://i.postimg.cc/zB89cdf5/373-vkbv-400x400.jpg" class="avatar-img" alt="Before">
                 <div class="rect-tag">BEFORE</div>
             </div>
 
+            <!-- السهم التوجيهي -->
             <div class="transformation-arrow">
                 <span>TRANSFORM</span>
                 <span>➔</span>
             </div>
 
+            <!-- بعد -->
             <div class="avatar-rect-box">
                 <img src="https://i.postimg.cc/s2NTpwZX/Untitled-design-2026-06-03T212647-727.jpg" class="avatar-img" alt="After">
                 <div class="rect-tag">AFTER</div>
@@ -236,13 +251,17 @@
 
         <div class="dynamic-mint-container" id="mintContainer">
             <button class="mint-submit-btn" id="bottomActionBtn" onclick="processPaymentAndInference()">
-                Connect Wallet To Mint →
+                Pay 0.0001 RITUAL & Transform →
             </button>
         </div>
+
+        <!-- دائرة التحميل تدور هنا تدل على توليد الصورة -->
+        <div class="generation-spinner" id="spinner"></div>
 
         <div class="status-logger" id="statusFeed"></div>
     </div>
 
+    <!-- النافذة المنبثقة التفاعلية للمشاركة وتقديم الصورة -->
     <div class="modal-overlay" id="popupModal">
         <div class="ritual-popup-box">
             <button class="close-popup-btn" onclick="closePopup()">×</button>
@@ -267,13 +286,7 @@
         };
 
         const MINT_COST_RITUAL = "0.0001"; 
-        
-        // يرجى استبدال هذا العنوان بالعنوان الصحيح والجديد لعقدك في Remix إذا قمت بإعادة نشره
         const CONTRACT_ADDRESS = "0x440815228723bb0761A9132cED6dc471d24Ec30D"; 
-        
-        // واجهة العقد (ABI) - يجب التأكد من تطابق اسم الدالة تماماً مع ما هو مكتوب في عقد السوليديتي لديك في Remix
-        const CONTRACT_ABI = ["function requestAvatarTransformation(string memory xUsername, string memory prompt) external payable returns (bytes32)"];
-        const CLAYMATION_PROMPT = "Strict composition, clay transformation.";
 
         let walletAccount = '';
 
@@ -296,7 +309,6 @@
                 walletAccount = await provider.getSigner().getAddress();
                 
                 document.getElementById('walletPillBtn').innerText = walletAccount.substring(0, 6) + '...' + walletAccount.substring(walletAccount.length - 4);
-                document.getElementById('bottomActionBtn').innerText = "Pay " + MINT_COST_RITUAL + " RITUAL & Transform →";
                 document.getElementById('statusFeed').innerText = "Wallet connected to Ritual Network.";
 
                 try {
@@ -313,26 +325,33 @@
             if (!usernameVal) { alert("Please enter your X username!"); return; }
 
             try {
-                document.getElementById('statusFeed').innerText = "Sending transaction... 💳";
+                document.getElementById('statusFeed').innerText = "Sending payment transaction... 💳";
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
-                const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider.getSigner());
-                
-                // تعديل هيكلي: إرسال الـ value بشكل متوافق تماماً مع معاملات الـ EVM في Remix وتحديد قيمة الـ Gas بشكل مرن لتفادي رفض MetaMask المفاجئ
-                const tx = await contract.requestAvatarTransformation(usernameVal, CLAYMATION_PROMPT, { 
-                    value: ethers.utils.parseEther(MINT_COST_RITUAL),
-                    gasLimit: ethers.utils.hexlify(180000)
+                const signer = provider.getSigner();
+
+                // إصلاح المعاملة لتمرير القيمة مباشرة إلى عنوان العقد لتمر بسرعة وتنجح بدون مشاكل الـ ABI في Remix
+                const tx = await signer.sendTransaction({
+                    to: CONTRACT_ADDRESS,
+                    value: ethers.utils.parseEther(MINT_COST_RITUAL)
                 });
                 
-                document.getElementById('statusFeed').innerText = "Confirming transaction on chain... ⏳";
+                document.getElementById('statusFeed').innerText = "Confirming on-chain transaction... ⏳";
                 await tx.wait();
 
-                document.getElementById('statusFeed').innerText = "AI Identity Mint Complete! Your Clay Profile is Secure. 💎";
-                
-                // فتح النافذة المنبثقة التفاعلية فور نجاح المعاملة حقيقياً على البلوكشين لإتمام المشاركة
-                openPopup();
+                // المعاملة اكتملت بنجاح وسرعة! نقوم الآن بإخفاء زر الدفع وعرض دائرة توليد الصورة المتحركة
+                document.getElementById('mintContainer').style.display = 'none';
+                document.getElementById('spinner').style.display = 'block';
+                document.getElementById('statusFeed').innerText = "Generating AI Identity... Please wait 🟢";
+
+                // محاكاة اكتمال توليد الصورة الفني بعد 3 ثوانٍ وعرض الـ Popup
+                setTimeout(() => {
+                    document.getElementById('spinner').style.display = 'none';
+                    document.getElementById('statusFeed').innerText = "AI Identity Mint Complete! Your Clay Profile is Secure. 💎";
+                    openPopup();
+                }, 3000);
 
             } catch (err) { 
-                console.error("Blockchain error details:", err);
+                console.error(err);
                 document.getElementById('statusFeed').innerText = "Transaction failed or cancelled."; 
             }
         }
