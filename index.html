@@ -33,7 +33,7 @@
             position: relative;
         }
 
-        /* تأثير النيران الجانبية */
+        /* تأثير النيران الجانبية المشتعلة في أقصى الشاشة */
         .side-flame {
             position: fixed;
             bottom: 0;
@@ -55,6 +55,7 @@
             100% { transform: scaleY(1.1) skewX(3deg); opacity: 0.7; }
         }
 
+        /* الهيدر ممتد بالكامل لأطراف الشاشة */
         header {
             width: 100%;
             max-width: 96%; 
@@ -158,7 +159,7 @@
         .status-logger { font-family: 'Courier Prime', monospace; font-size: 12px; margin-top: 20px; color: var(--neon-flame); }
         footer { font-size: 11px; color: #7c7560; margin-top: auto; padding: 20px; font-family: 'Courier Prime', monospace; z-index: 10;}
 
-        /* تنسيق النافذة المنبثقة (Popup Modal) */
+        /* تنسيق النافذة المنبثقة التفاعلية (Popup Modal) */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(18, 18, 18, 0.85); display: flex; align-items: center;
@@ -266,7 +267,11 @@
         };
 
         const MINT_COST_RITUAL = "0.0001"; 
+        
+        // يرجى استبدال هذا العنوان بالعنوان الصحيح والجديد لعقدك في Remix إذا قمت بإعادة نشره
         const CONTRACT_ADDRESS = "0x440815228723bb0761A9132cED6dc471d24Ec30D"; 
+        
+        // واجهة العقد (ABI) - يجب التأكد من تطابق اسم الدالة تماماً مع ما هو مكتوب في عقد السوليديتي لديك في Remix
         const CONTRACT_ABI = ["function requestAvatarTransformation(string memory xUsername, string memory prompt) external payable returns (bytes32)"];
         const CLAYMATION_PROMPT = "Strict composition, clay transformation.";
 
@@ -312,10 +317,10 @@
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider.getSigner());
                 
-                // إضافة gasLimit يدوياً لتفادي رفض MetaMask التلقائي للشبكات الاختبارية المصممة بـ Remix
+                // تعديل هيكلي: إرسال الـ value بشكل متوافق تماماً مع معاملات الـ EVM في Remix وتحديد قيمة الـ Gas بشكل مرن لتفادي رفض MetaMask المفاجئ
                 const tx = await contract.requestAvatarTransformation(usernameVal, CLAYMATION_PROMPT, { 
                     value: ethers.utils.parseEther(MINT_COST_RITUAL),
-                    gasLimit: 150000 
+                    gasLimit: ethers.utils.hexlify(180000)
                 });
                 
                 document.getElementById('statusFeed').innerText = "Confirming transaction on chain... ⏳";
@@ -323,11 +328,11 @@
 
                 document.getElementById('statusFeed').innerText = "AI Identity Mint Complete! Your Clay Profile is Secure. 💎";
                 
-                // فتح النافذة المنبثقة التفاعلية فور نجاح المعاملة
+                // فتح النافذة المنبثقة التفاعلية فور نجاح المعاملة حقيقياً على البلوكشين لإتمام المشاركة
                 openPopup();
 
             } catch (err) { 
-                console.error(err);
+                console.error("Blockchain error details:", err);
                 document.getElementById('statusFeed').innerText = "Transaction failed or cancelled."; 
             }
         }
