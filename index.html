@@ -3,21 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ritual · Identity Generator</title>
+    <title>Ritual · Identity Scanner</title>
     <!-- مكتبة Ethers.js للربط مع المحفظة -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-    <!-- استدعاء خطوط متناسقة وعصرية -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --bg-color: #f3edd7;     /* لون الخلفية الكريمي الدافئ */
-            --card-bg: #e6dfca;      /* لون البطاقات الداخلية */
-            --dark-color: #121212;   /* الأسود الغامق للحدود والنصوص */
-            --ritual-green: #084c33; /* أخضر ريتشوال الغامق الاحترافي */
-            --ritual-light-green: #0cd97e; /* الأخضر المضيء للتنبيهات */
+            --bg-color: #f3edd7;     /* الخلفية الكريمية الدافئة */
+            --card-bg: #e6dfca;      /* لون البطاقة الداخلي */
+            --dark-color: #121212;   /* الأسود الغامق للحدود */
+            --ritual-green: #084c33; /* أخضر ريتشوال الغامق */
+            --neon-green: #0cd97e;   /* الأخضر المضيء للتأثيرات */
         }
 
         * {
@@ -46,63 +45,35 @@
             padding: 30px 20px;
         }
 
-        /* شعار ريتشوال في أقصى اليمين */
-        .brand-logo {
+        /* وضع شعار ريتشوال الرسمي في أعلى الجانب الأيمن */
+        .brand-container {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        .logo-graphic {
-            width: 32px;
-            height: 32px;
+        .ritual-official-logo {
+            width: 45px;
+            height: 45px;
             border: 2px solid var(--dark-color);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        .logo-graphic::before {
-            content: '';
-            width: 16px;
-            height: 16px;
-            border: 2px solid var(--dark-color);
-            border-radius: 50%;
-        }
-        .logo-graphic::after {
-            content: '';
-            width: 5px;
-            height: 5px;
-            background-color: var(--dark-color);
-            border-radius: 50%;
-            position: absolute;
+            object-fit: cover;
+            box-shadow: 2px 2px 0px var(--dark-color);
         }
 
-        .brand-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.2;
-        }
         .brand-name {
-            font-weight: 700;
-            font-size: 20px;
-            letter-spacing: 0.3px;
-        }
-        .brand-desc {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: #5c5643;
+            font-weight: 800;
+            font-size: 24px;
+            letter-spacing: -0.5px;
         }
 
-        /* تغيير شكل وتصميم زر Connect Wallet بالكامل */
+        /* زر المحفظة الدائري الأنيق */
         .wallet-pill-btn {
             background-color: var(--ritual-green);
             color: #ffffff;
             border: 2px solid var(--dark-color);
             padding: 10px 24px;
-            border-radius: 30px; /* جعل الزر على شكل كبسولة دائرية */
+            border-radius: 30px;
             font-weight: 600;
             font-size: 14px;
             cursor: pointer;
@@ -113,21 +84,18 @@
             transform: translate(-2px, -2px);
             box-shadow: 5px 5px 0px var(--dark-color);
         }
-        .wallet-pill-btn:active {
-            transform: translate(1px, 1px);
-            box-shadow: 1px 1px 0px var(--dark-color);
-        }
 
         /* الحاوية الرئيسية للموقع */
-        .wrapper {
+        .main-card {
             width: 100%;
-            max-width: 500px;
+            max-width: 460px;
             background: #fbf8f0;
             border: 2px solid var(--dark-color);
             padding: 40px 30px;
-            margin-top: 20px;
+            margin-top: 30px;
             margin-bottom: 50px;
-            box-shadow: 6px 6px 0px var(--dark-color);
+            box-shadow: 8px 8px 0px var(--dark-color);
+            text-align: center;
         }
 
         .top-badge {
@@ -137,39 +105,67 @@
             border: 1px solid var(--dark-color);
             padding: 4px 12px;
             border-radius: 4px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            background-color: var(--card-bg);
         }
 
         h1 {
-            font-size: 32px;
-            font-weight: 700;
+            font-size: 30px;
+            font-weight: 800;
             line-height: 1.2;
-            margin-bottom: 25px;
+            margin-bottom: 35px;
         }
         h1 span {
             color: var(--ritual-green);
         }
 
-        /* تصميم دائرة عرض الأفاتار المتناسقة */
-        .avatar-display {
-            width: 200px;
-            height: 200px;
+        /* التصميم الفريد: دمج خانة وضع اليوزر مع رادار الأفاتار الدائري */
+        .identity-scanner-zone {
+            position: relative;
+            width: 260px;
+            height: 260px;
+            margin: 0 auto 40px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* حلقة الرادار الخارجية الدوارة التفاعلية */
+        .scanner-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px dashed #999999;
+            border-radius: 50%;
+            animation: rotateRadar 20s linear infinite;
+            transition: border-color 0.3s ease;
+        }
+
+        @keyframes rotateRadar {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* الدائرة الداخلية الحاضنة للأفاتار والمدخل */
+        .avatar-core {
+            width: 210px;
+            height: 210px;
             border: 2px solid var(--dark-color);
             border-radius: 50%;
-            margin: 0 auto 30px auto;
             background-color: var(--card-bg);
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             overflow: hidden;
-            box-shadow: inset 0px 4px 10px rgba(0,0,0,0.05);
+            box-shadow: inset 0px 4px 12px rgba(0,0,0,0.06);
         }
 
         .avatar-svg {
-            width: 110px;
-            height: 110px;
-            opacity: 0.3;
+            width: 100px;
+            height: 100px;
+            opacity: 0.25;
+            transition: opacity 0.3s;
         }
 
         .avatar-img {
@@ -179,96 +175,84 @@
             display: none;
         }
 
-        .floating-tag {
+        /* خانة إدخال اليوزر المبتكرة: تطفو كعلامة رقمية أسفل الرادار ومدمجة به */
+        .floating-input-badge {
             position: absolute;
-            bottom: 12px;
-            background: var(--dark-color);
-            color: #ffffff;
-            font-family: 'Courier Prime', monospace;
-            font-size: 11px;
-            padding: 2px 10px;
-            border-radius: 10px;
-        }
-
-        /* تغيير شكل مكان وضع اليوزر بالكامل (تصميم كبسولة دائري مدمج) */
-        .search-capsule-zone {
-            margin-bottom: 30px;
-            text-align: left;
-        }
-        .search-label {
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-            display: block;
-            color: #4a4433;
-        }
-        .capsule-input-container {
-            display: flex;
-            align-items: center;
+            bottom: -15px;
+            width: 85%;
             background: #ffffff;
             border: 2px solid var(--dark-color);
-            border-radius: 50px; /* حواف دائرية بالكامل */
-            padding: 4px;
-            box-shadow: 2px 2px 0px var(--dark-color);
-            overflow: hidden;
+            border-radius: 20px;
+            padding: 2px 4px;
+            display: flex;
+            align-items: center;
+            box-shadow: 3px 3px 0px var(--dark-color);
+            transition: border-color 0.3s;
         }
-        .capsule-input-container input {
-            flex: 1;
+
+        .floating-input-badge input {
+            width: 100%;
             border: none;
             background: transparent;
-            padding: 12px 20px;
-            font-size: 15px;
+            padding: 10px 15px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 14px;
+            font-weight: bold;
             outline: none;
             color: var(--dark-color);
+            text-align: center;
         }
-        .capsule-submit-btn {
+
+        .scanner-scan-btn {
             background-color: var(--dark-color);
             color: #ffffff;
             border: none;
-            padding: 12px 25px;
-            border-radius: 40px;
-            font-size: 13px;
-            font-weight: 600;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-weight: bold;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: background 0.2s;
+            font-size: 14px;
         }
-        .capsule-submit-btn:hover {
+        .scanner-scan-btn:hover {
             background-color: var(--ritual-green);
         }
 
-        /* جدول التفاصيل الصغير السفلي */
-        .details-box {
+        /* جدول التفاصيل السفلي */
+        .details-grid {
             background-color: var(--card-bg);
             border: 1px solid #cfc7af;
-            border-radius: 8px;
+            border-radius: 6px;
             padding: 15px;
             font-family: 'Courier Prime', monospace;
             font-size: 12px;
             text-align: left;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
-        .details-item {
+        .details-row {
             display: flex;
             justify-content: space-between;
             margin-bottom: 6px;
         }
-        .details-item:last-child {
+        .details-row:last-child {
             margin-bottom: 0;
         }
         .details-label {
-            color: #615a47;
+            color: #5c5542;
         }
-        .switch-chain-text {
+        .switch-link {
             color: var(--ritual-green);
             text-decoration: underline;
             cursor: pointer;
             font-weight: bold;
         }
 
-        /* زر الإجراء الرئيسي السفلي الكبير */
-        .bottom-action-btn {
+        /* زر المينت الكبير السفلي */
+        .mint-submit-btn {
             width: 100%;
             background-color: transparent;
             border: 2px solid var(--dark-color);
@@ -280,16 +264,16 @@
             box-shadow: 4px 4px 0px var(--dark-color);
             transition: all 0.1s ease;
         }
-        .bottom-action-btn:hover {
+        .mint-submit-btn:hover {
             background-color: #f3edd7;
         }
 
-        .status-feed {
+        .status-logger {
             font-family: 'Courier Prime', monospace;
             font-size: 12px;
-            margin-top: 15px;
+            margin-top: 18px;
             color: var(--ritual-green);
-            text-align: center;
+            font-weight: bold;
         }
 
         footer {
@@ -303,68 +287,64 @@
 </head>
 <body>
 
-    <!-- الترويسة العلوية وبها شعار ريتشوال في أقصى اليمين بالشكل المطلوب -->
+    <!-- الهيدر العلوي وبداخلة الشعار الرسمي لـ ريتشوال في أقصى الجانب بدون النص الإضافي -->
     <header>
-        <div class="brand-logo">
-            <div class="logo-graphic"></div>
-            <div class="brand-text">
-                <span class="brand-name">Ritual</span>
-                <span class="brand-desc">Autonomous Intelligence</span>
-            </div>
+        <div class="brand-container">
+            <img src="https://pbs.twimg.com/profile_images/2047761933764268032/ltdZOulq_400x400.jpg" class="ritual-official-logo" alt="Ritual Logo">
+            <span class="brand-name">Ritual</span>
         </div>
-        <!-- شكل زر الـ Connect Wallet الجديد كبسولة دائرية مميزة -->
         <button class="wallet-pill-btn" id="walletPillBtn" onclick="connectWallet()">Connect Wallet</button>
     </header>
 
-    <!-- الحاوية الأساسية للموقع -->
-    <div class="wrapper">
+    <!-- بطاقة المينت الرئيسية المعززة بالتصميم المبتكر -->
+    <div class="main-card">
         <div class="top-badge">Ritual Chain · Testnet 1979</div>
         
-        <h1>Mint your AI <span>identity</span></h1>
+        <h1>Generate AI <span>Identity</span></h1>
 
-        <!-- منطقة الأفاتار الدائرية الدقيقة -->
-        <div class="avatar-display">
-            <!-- أيقونة مستخدم كلاسيكية ناعمة -->
-            <svg class="avatar-svg" id="defaultAvatarSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <!-- صورة التوليد الحقيقية -->
-            <img src="" id="generatedAvatarImg" class="avatar-img" alt="Ritual Avatar">
-            <div class="floating-tag" id="floatingUserTag">@username</div>
-        </div>
+        <!-- منطقة الرادار المدمجة الفريدة (تم دمج خانة اليوزر داخل التصميم الدائري نفسه) -->
+        <div class="identity-scanner-zone">
+            <!-- حلقة الرادار الخارجية الدوارة تعطي شكل المسح الذكي -->
+            <div class="scanner-ring" id="radarRing"></div>
+            
+            <!-- قلب الأفاتار الدائري -->
+            <div class="avatar-core" id="avatarCore">
+                <svg class="avatar-svg" id="defaultAvatarSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <img src="" id="generatedAvatarImg" class="avatar-img" alt="Ritual Identity">
+            </div>
 
-        <!-- شكل مكان وضع اليوزر الجديد كبسولة دائرية مبتكرة بالكامل -->
-        <div class="search-capsule-zone">
-            <label class="search-label">X Handle</label>
-            <div class="capsule-input-container">
-                <input type="text" id="xInput" placeholder="@username" oninput="handleTagChange(this.value)">
-                <button class="capsule-submit-btn" onclick="triggerInference()">Load</button>
+            <!-- خانة وضع اليوزر العائمة والمبتكرة كلياً مدمجة أسفل الدائرة -->
+            <div class="floating-input-badge" id="inputBadge">
+                <input type="text" id="xInput" placeholder="@handle" onfocus="activateScanner()" onblur="deactivateScanner()">
+                <button class="scanner-scan-btn" onclick="triggerInference()">→</button>
             </div>
         </div>
 
-        <!-- جدول تفاصيل الاتصال والمحفظة -->
-        <div class="details-box">
-            <div class="details-item">
-                <span class="details-label">Wallet Status</span>
+        <!-- جدول تفاصيل شبكة الـ Testnet -->
+        <div class="details-grid">
+            <div class="details-row">
+                <span class="details-label">Wallet Address</span>
                 <span id="lblWallet">Disconnected</span>
             </div>
-            <div class="details-item">
+            <div class="details-row">
                 <span class="details-label">Current Chain</span>
                 <span id="lblChain">—</span>
             </div>
-            <div class="details-item">
+            <div class="details-row">
                 <span class="details-label">Network Action</span>
-                <span class="switch-chain-text" onclick="connectWallet()">Switch to Ritual Chain</span>
+                <span class="switch-link" onclick="connectWallet()">Switch to Ritual Chain</span>
             </div>
         </div>
 
         <!-- زر المينت السفلي الكبير -->
-        <button class="bottom-action-btn" id="bottomActionBtn" onclick="connectWallet()">
+        <button class="mint-submit-btn" id="bottomActionBtn" onclick="connectWallet()">
             Connect Wallet To Mint →
         </button>
 
-        <div class="status-feed" id="statusFeed"></div>
+        <div class="status-logger" id="statusFeed"></div>
     </div>
 
     <footer>
@@ -387,9 +367,17 @@
 
         let walletAccount = '';
 
-        function handleTagChange(value) {
-            const tag = document.getElementById('floatingUserTag');
-            tag.innerText = value ? (value.startsWith('@') ? value : '@' + value) : '@username';
+        // تفاعلات بصرية فريدة لخانة اليوزر عند الكتابة والتركيز
+        function activateScanner() {
+            document.getElementById('radarRing').style.borderColor = 'var(--ritual-green)';
+            document.getElementById('avatarCore').style.borderColor = 'var(--ritual-green)';
+            document.getElementById('inputBadge').style.borderColor = 'var(--ritual-green)';
+        }
+
+        function deactivateScanner() {
+            document.getElementById('radarRing').style.borderColor = '#999999';
+            document.getElementById('avatarCore').style.borderColor = 'var(--dark-color)';
+            document.getElementById('inputBadge').style.borderColor = 'var(--dark-color)';
         }
 
         async function connectWallet() {
@@ -405,11 +393,11 @@
                 
                 const formatAddr = walletAccount.substring(0, 6) + '...' + walletAccount.substring(walletAccount.length - 4);
                 
-                // تحديث الواجهة والـ Pills الجديدة
                 document.getElementById('walletPillBtn').innerText = formatAddr;
                 document.getElementById('lblWallet').innerText = formatAddr;
                 document.getElementById('lblChain').innerText = "Ritual Testnet";
                 document.getElementById('bottomActionBtn').innerText = "Mint Identity Avatar →";
+                document.getElementById('statusFeed').innerText = "Wallet active on Ritual Network.";
 
                 try {
                     await window.ethereum.request({
@@ -424,7 +412,6 @@
                         });
                     }
                 }
-                document.getElementById('statusFeed').innerText = "Wallet active on Ritual Network.";
             } catch (e) {
                 console.error(e);
                 document.getElementById('statusFeed').innerText = "Connection rejected.";
@@ -452,10 +439,12 @@
                     value: ethers.utils.parseEther("0.0")
                 });
 
-                document.getElementById('statusFeed').innerText = "Awaiting block confirmation... ⏳";
+                document.getElementById('statusFeed').innerText = "Scanning network for node response... ⏳";
+                // جعل الأنيميشن أسرع أثناء المعالجة لتأثير بصري رائع
+                document.getElementById('radarRing').style.animationDuration = '3s';
                 await tx.wait();
 
-                document.getElementById('statusFeed').innerText = "Tx successful! Cooking your avatar through Ritual AI nodes... 🍳";
+                document.getElementById('statusFeed').innerText = "Cooking your avatar through Ritual AI nodes... 🍳";
 
                 setTimeout(() => {
                     const outputUrl = "https://images.placeholders.dev/?width=400&height=400&text=" + usernameVal;
@@ -465,11 +454,13 @@
                     targetImg.src = outputUrl;
                     targetImg.style.display = 'block';
                     
-                    document.getElementById('statusFeed').innerText = "Your customized AI identity has loaded! 💎";
+                    document.getElementById('radarRing').style.animationDuration = '20s';
+                    document.getElementById('statusFeed').innerText = "AI Identity Scanner Complete! 💎";
                 }, 5000);
 
             } catch (err) {
                 console.error(err);
+                document.getElementById('radarRing').style.animationDuration = '20s';
                 document.getElementById('statusFeed').innerText = "Transaction failed or denied.";
             }
         }
