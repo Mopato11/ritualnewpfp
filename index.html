@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ritual · Identity Mint</title>
+    <title>Ritual · The Digital Altar</title>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,8 +15,8 @@
             --card-bg: #e6dfca;      /* لون البطاقة الداخلي */
             --dark-color: #121212;   /* الأسود الغامق للحدود */
             --ritual-green: #084c33; /* أخضر ريتشوال الغامق المميز */
-            --neon-flame: #42f5b2;   /* اللون الأخضر الفسفوري المضيء للشعلة المطلوبة */
-            --fire-glow: rgba(66, 245, 178, 0.45); 
+            --neon-flame: #42f5b2;   /* الأخضر الفسفوري المضيء للشعلة */
+            --fire-glow: rgba(66, 245, 178, 0.5); 
         }
 
         * {
@@ -37,56 +37,78 @@
             overflow-x: hidden;
         }
 
-        /* تصميم الشعلات النارية المتطابقة مع الصورة */
-        .green-flame-container {
+        /* حاوية الشموع المشتعلة على جوانب الشاشة لإنشاء المذبح الرقمي */
+        .candle-shrine {
             position: fixed;
-            bottom: 50px;
-            width: 90px;
-            height: 140px;
+            bottom: 0;
+            width: 100px;
+            height: 280px;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
             align-items: center;
+            justify-content: flex-end;
             pointer-events: none;
-            z-index: 1;
+            z-index: 2;
         }
-        
-        .flame-left { left: 6%; }
-        .flame-right { right: 6%; }
+        .candle-left { left: 8%; }
+        .candle-right { right: 8%; }
 
-        /* الشعلة الـ SVG وتأثير الاهتزاز والتوهج الحقيقي للنار */
-        .custom-flame-svg {
-            width: 70px;
-            height: auto;
-            fill: var(--neon-flame);
-            filter: drop-shadow(0px 0px 20px var(--fire-glow));
-            transform-origin: bottom center;
-            animation: flameWobble 1.2s ease-in-out infinite alternate;
+        /* جسم الشمعة المصمت */
+        .candle-body {
+            width: 22px;
+            height: 140px;
+            background: linear-gradient(to right, #242424, #121212, #383838);
+            border: 2px solid var(--dark-color);
+            border-bottom: none;
+            position: relative;
+            box-shadow: 5px 0px 0px rgba(0,0,0,0.15);
         }
-
-        /* جزيئات وشرارات متصاعدة من النار */
-        .flame-particle {
+        /* فتيل الشمعة */
+        .candle-wick {
+            width: 3px;
+            height: 12px;
+            background-color: #555;
             position: absolute;
-            width: 8px;
-            height: 8px;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* شعلة النار المنحنية المستوحاة من شعار ديسكورد ورسمتك الحية */
+        .candle-flame-svg {
+            width: 55px;
+            height: auto;
+            position: absolute;
+            top: -62px;
+            left: 50%;
+            transform: translateX(-50%);
+            fill: var(--neon-flame);
+            filter: drop-shadow(0px -5px 25px var(--fire-glow)) blur(0.3px);
+            transform-origin: bottom center;
+            animation: ritualBurn 1s ease-in-out infinite alternate;
+        }
+
+        /* جزيئات طاقة متصاعدة من لهب الشموع */
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
             background-color: var(--neon-flame);
             border-radius: 50%;
-            bottom: 50px;
-            animation: floatUp 1.8s linear infinite;
-            opacity: 0.8;
-            filter: drop-shadow(0px 0px 5px var(--neon-flame));
+            top: -60px;
+            animation: ritualFloat 2s linear infinite;
+            filter: drop-shadow(0px 0px 4px var(--neon-flame));
         }
 
-        /* حركات الأنيميشن للحصول على تفاعل ناري واقعي */
-        @keyframes flameWobble {
-            0% { transform: scale(1) rotate(-1deg); }
-            50% { transform: scale(1.08) rotate(2deg) skewX(-2deg); }
-            100% { transform: scale(0.95) rotate(-2deg) skewX(2deg); }
+        @keyframes ritualBurn {
+            0% { transform: translateX(-50%) scale(1) rotate(-2deg); }
+            50% { transform: translateX(-50%) scale(1.1) rotate(3deg) skewX(-1deg); }
+            100% { transform: translateX(-50%) scale(0.95) rotate(-3deg) skewX(1deg); }
         }
 
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 0.9; }
-            100% { transform: translateY(-100px) scale(0.2); opacity: 0; }
+        @keyframes ritualFloat {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-120px) scale(0.1); opacity: 0; }
         }
 
         /* الهيدر العلوي */
@@ -146,7 +168,7 @@
             background: #fbf8f0;
             border: 2px solid var(--dark-color);
             padding: 40px 30px;
-            margin-top: 30px;
+            margin-top: 20px;
             margin-bottom: 50px;
             box-shadow: 8px 8px 0px var(--dark-color);
             text-align: center;
@@ -174,10 +196,10 @@
             color: var(--ritual-green);
         }
 
-        /* مربع عرض الأفاتار المستطيل */
+        /* مربع مستطيل بزخرفة طقوسية معززة وكثيفة حول Ritual */
         .avatar-rect-box {
-            width: 220px;
-            height: 220px;
+            width: 230px;
+            height: 230px;
             border: 2px solid var(--dark-color);
             background-color: var(--card-bg);
             margin: 0 auto 35px auto;
@@ -185,35 +207,51 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 5px 5px 0px var(--dark-color);
+            box-shadow: 6px 6px 0px var(--dark-color);
             overflow: hidden;
         }
 
-        /* رمز حلقات Ritual في خلفية المربع */
-        .ritual-bg-symbol {
+        /* الشبكة الزخرفية للـ Altar النيو-بروتاليزم */
+        .ritual-altar-decor {
             position: absolute;
-            width: 160px;
-            height: 160px;
-            border: 1px dashed rgba(8, 76, 51, 0.25);
-            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            pointer-events: none;
         }
-        .ritual-bg-symbol::before {
-            content: '';
-            width: 100px;
-            height: 100px;
+        /* حلقات طقوس ريتشوال الرقمية المتداخلة */
+        .decor-ring-1 {
+            position: absolute;
+            width: 190px;
+            height: 190px;
+            border: 1px dashed rgba(8, 76, 51, 0.35);
+            border-radius: 50%;
+        }
+        .decor-ring-2 {
+            position: absolute;
+            width: 150px;
+            height: 150px;
             border: 1px solid rgba(18, 18, 18, 0.15);
             border-radius: 50%;
+        }
+        .decor-crosshairs {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(to right, transparent 49.5%, rgba(8, 76, 51, 0.12) 50%, transparent 50.5%),
+                linear-gradient(to bottom, transparent 49.5%, rgba(8, 76, 51, 0.12) 50%, transparent 50.5%);
         }
 
         .avatar-svg {
             width: 90px;
             height: 90px;
-            opacity: 0.3;
-            z-index: 1;
+            opacity: 0.35;
+            z-index: 2;
         }
 
         .avatar-img {
@@ -221,7 +259,7 @@
             height: 100%;
             object-fit: cover;
             display: none;
-            z-index: 2;
+            z-index: 3;
         }
 
         .rect-tag {
@@ -233,10 +271,10 @@
             font-family: 'Courier Prime', monospace;
             font-size: 11px;
             padding: 4px 0;
-            z-index: 3;
+            z-index: 4;
         }
 
-        /* خانة إدخال اليوزر المستطيلة */
+        /* خانة إدخال اليوزر المستطيلة الحادة */
         .input-block-zone {
             margin-bottom: 30px;
             text-align: left;
@@ -270,7 +308,7 @@
             color: var(--dark-color);
         }
 
-        /* زر المينت الديناميكي المخفي */
+        /* زر المينت الديناميكي المظهر */
         .dynamic-mint-container {
             display: none;
             opacity: 0;
@@ -315,20 +353,26 @@
 </head>
 <body>
 
-    <div class="green-flame-container flame-left">
-        <svg class="custom-flame-svg" viewBox="0 0 100 150">
-            <path d="M50,150 C75,150 90,125 90,95 C90,65 75,55 70,30 C65,50 55,55 50,10 C45,55 35,50 30,30 C25,55 10,65 10,95 C10,125 25,150 50,150 Z" />
-        </svg>
-        <div class="flame-particle" style="animation-delay: 0.2s; left: 30px;"></div>
-        <div class="flame-particle" style="animation-delay: 0.8s; left: 50px;"></div>
+    <div class="candle-shrine candle-left">
+        <div class="candle-body">
+            <svg class="candle-flame-svg" viewBox="0 0 100 150">
+                <path d="M50,150 C75,150 90,125 90,95 C90,65 75,55 70,30 C65,50 55,55 50,10 C45,55 35,50 30,30 C25,55 10,65 10,95 C10,125 25,150 50,150 Z" />
+            </svg>
+            <div class="candle-wick"></div>
+        </div>
+        <div class="sparkle" style="animation-delay: 0.3s; left: 45px;"></div>
+        <div class="sparkle" style="animation-delay: 1.1s; left: 52px;"></div>
     </div>
 
-    <div class="green-flame-container flame-right">
-        <svg class="custom-flame-svg" viewBox="0 0 100 150">
-            <path d="M50,150 C75,150 90,125 90,95 C90,65 75,55 70,30 C65,50 55,55 50,10 C45,55 35,50 30,30 C25,55 10,65 10,95 C10,125 25,150 50,150 Z" />
-        </svg>
-        <div class="flame-particle" style="animation-delay: 0.4s; left: 25px;"></div>
-        <div class="flame-particle" style="animation-delay: 1.1s; left: 55px;"></div>
+    <div class="candle-shrine candle-right">
+        <div class="candle-body">
+            <svg class="candle-flame-svg" viewBox="0 0 100 150">
+                <path d="M50,150 C75,150 90,125 90,95 C90,65 75,55 70,30 C65,50 55,55 50,10 C45,55 35,50 30,30 C25,55 10,65 10,95 C10,125 25,150 50,150 Z" />
+            </svg>
+            <div class="candle-wick"></div>
+        </div>
+        <div class="sparkle" style="animation-delay: 0.6s; left: 48px;"></div>
+        <div class="sparkle" style="animation-delay: 1.5s; left: 42px;"></div>
     </div>
 
     <header>
@@ -345,7 +389,12 @@
         <h1>Generate AI <span>Identity</span></h1>
 
         <div class="avatar-rect-box">
-            <div class="ritual-bg-symbol"></div>
+            <div class="ritual-altar-decor">
+                <div class="decor-crosshairs"></div>
+                <div class="decor-ring-1"></div>
+                <div class="decor-ring-2"></div>
+            </div>
+            
             <svg class="avatar-svg" id="defaultAvatarSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round" stroke-linejoin="round"/>
                 <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/>
@@ -465,24 +514,4 @@
                 document.getElementById('statusFeed').innerText = "Awaiting block confirmation... ⏳";
                 await tx.wait();
 
-                document.getElementById('statusFeed').innerText = "Cooking your avatar through Ritual AI nodes... 🔮";
-
-                setTimeout(() => {
-                    const outputUrl = "https://images.placeholders.dev/?width=400&height=400&text=" + usernameVal;
-                    
-                    document.getElementById('defaultAvatarSvg').style.display = 'none';
-                    const targetImg = document.getElementById('generatedAvatarImg');
-                    targetImg.src = outputUrl;
-                    targetImg.style.display = 'block';
-                    
-                    document.getElementById('statusFeed').innerText = "AI Identity Mint Complete! 💎";
-                }, 5000);
-
-            } catch (err) {
-                console.error(err);
-                document.getElementById('statusFeed').innerText = "Transaction failed or denied.";
-            }
-        }
-    </script>
-</body>
-</html>
+                document.getElementById('
