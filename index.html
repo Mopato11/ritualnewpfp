@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ritual · The Digital Altar</title>
+    <title>Ritual · The Altar Core</title>
     <!-- مكتبة Ethers.js للربط مع المحفظة -->
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,12 +12,12 @@
 
     <style>
         :root {
-            --bg-color: #f3edd7;     /* الخلفية الكريمية الدافئة */
-            --card-bg: #e6dfca;      /* لون البطاقة الداخلي */
-            --dark-color: #121212;   /* الأسود الغامق للحدود */
-            --ritual-green: #084c33; /* أخضر ريتشوال الغامق المميز */
-            --neon-flame: #42f5b2;   /* الأخضر الفسفوري المضيء للشعلة */
-            --fire-glow: rgba(66, 245, 178, 0.45); 
+            --bg-color: #f3edd7;     /* الخلفية الكريمية الدافئة للموقع */
+            --ritual-dark-green: #052e1e; /* لون المذبح المركزي الجديد (أخضر ريتشوال عميق جداً) */
+            --ritual-green: #084c33; /* أخضر ريتشوال الرسمي */
+            --neon-flame: #42f5b2;   /* الأخضر الفسفوري المضيء للنار المشتعلة والزخارف */
+            --dark-color: #121212;   /* الحدود السوداء الحادة */
+            --fire-glow: rgba(66, 245, 178, 0.4); 
         }
 
         * {
@@ -38,51 +38,52 @@
             overflow-x: hidden;
         }
 
-        /* النيران المشتعلة العائمة الحرة على جوانب الشاشة (تم استعادة التصميم الحري) */
-        .green-flame-shrine {
+        /* تصميم النار المشتعلة الكبيرة العائدة على جوانب الشاشة */
+        .wild-fire-shrine {
             position: fixed;
-            bottom: 60px;
-            width: 80px;
-            height: 120px;
+            bottom: 30px;
+            width: 100px;
+            height: 140px;
             display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
+            justify-content: center;
+            align-items: flex-end;
             pointer-events: none;
             z-index: 2;
         }
-        .flame-left { left: 7%; }
-        .flame-right { right: 7%; }
+        .fire-left { left: 6%; }
+        .fire-right { right: 6%; }
 
-        .custom-flame-svg {
-            width: 65px;
+        /* الشعلة النارية الكبيرة الـ SVG المخصصة المتوهجة */
+        .wild-flame-svg {
+            width: 85px;
             height: auto;
             fill: var(--neon-flame);
-            filter: drop-shadow(0px -5px 20px var(--fire-glow));
+            filter: drop-shadow(0px -5px 30px var(--fire-glow)) drop-shadow(0px 0px 10px var(--neon-flame));
             transform-origin: bottom center;
-            animation: flameBurnEffect 1.1s ease-in-out infinite alternate;
+            animation: wildBurn 1.1s ease-in-out infinite alternate;
         }
 
-        .flame-spark {
+        /* جزيئات وشرارات متصاعدة من النيران المشتعلة */
+        .ember-particle {
             position: absolute;
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
             background-color: var(--neon-flame);
             border-radius: 50%;
-            bottom: 30px;
-            animation: sparkFloatUp 2s linear infinite;
+            bottom: 40px;
+            animation: emberFloat 1.8s linear infinite;
             filter: drop-shadow(0px 0px 4px var(--neon-flame));
         }
 
-        @keyframes flameBurnEffect {
-            0% { transform: scale(1) rotate(-2deg); filter: drop-shadow(0px -5px 15px var(--fire-glow)); }
-            50% { transform: scale(1.12) rotate(3deg) skewX(-2deg); }
-            100% { transform: scale(0.95) rotate(-3deg) skewX(2deg); filter: drop-shadow(0px -5px 25px var(--fire-glow)); }
+        @keyframes wildBurn {
+            0% { transform: scale(1) rotate(-2deg); }
+            50% { transform: scale(1.15) rotate(3deg) skewX(-2deg); }
+            100% { transform: scale(0.95) rotate(-3deg) skewX(2deg); }
         }
 
-        @keyframes sparkFloatUp {
+        @keyframes emberFloat {
             0% { transform: translateY(0) scale(1); opacity: 0.9; }
-            100% { transform: translateY(-100px) scale(0.1); opacity: 0; }
+            100% { transform: translateY(-110px) scale(0.2); opacity: 0; }
         }
 
         /* الهيدر العلوي */
@@ -135,124 +136,102 @@
             box-shadow: 5px 5px 0px var(--dark-color);
         }
 
-        /* الهيكل المستوحى بالكامل من طقوس ومذابح Ritual الهندسية الحادة والمقسمة */
-        .altar-structure-container {
+        /* المذبح المركزي الجديد بالكامل (Ritual Altar Box) - تغيير جذري 100% عن المستطيل الأبيض القديم */
+        .ritual-altar-card {
             width: 100%;
-            max-width: 520px;
-            background: #fbf8f0;
-            border: 4px double var(--dark-color); /* حافة مزدوجة تعطي انطباع طقوسي أثري عتيق */
-            padding: 35px;
-            margin-top: 15px;
+            max-width: 480px;
+            background-color: var(--ritual-dark-green); /* أرضية المذبح غامقة وغامضة */
+            border: 3px solid var(--dark-color);
+            padding: 40px 30px;
+            margin-top: 20px;
             margin-bottom: 50px;
             box-shadow: 12px 12px 0px var(--dark-color);
+            text-align: center;
             position: relative;
             z-index: 5;
+            color: #ffffff; /* تغيير الخطوط للأبيض لتتناسب مع المذبح الغامق */
         }
 
-        /* زوايا متقاطعة لزخرفة المذبح الرقمي التكنولوجي */
+        /* زوايا طقوسية مطرزة مضيئة للبطاقة النيو-بروتاليزم */
         .altar-corner-decor {
             position: absolute;
-            width: 16px;
-            height: 16px;
-            border: 2px solid var(--dark-color);
-            background-color: var(--bg-color);
+            width: 15px;
+            height: 15px;
+            border: 2px solid var(--neon-flame);
+            z-index: 6;
         }
-        .tl { top: -8px; left: -8px; }
-        .tr { top: -8px; right: -8px; }
-        .bl { bottom: -8px; left: -8px; }
-        .br { bottom: -8px; right: -8px; }
+        .corner-tl { top: 12px; left: 12px; border-right: none; border-bottom: none; }
+        .corner-tr { top: 12px; right: 12px; border-left: none; border-bottom: none; }
+        .corner-bl { bottom: 12px; left: 12px; border-right: none; border-top: none; }
+        .corner-br { bottom: 12px; right: 12px; border-left: none; border-top: none; }
 
-        .altar-header-zone {
-            text-align: center;
-            border-bottom: 2px dashed rgba(18, 18, 18, 0.2);
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+        /* إطار زخرفي داخلي رفيع يفصل عناصر الطقس */
+        .altar-inner-border {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            border: 1px solid rgba(66, 245, 178, 0.15);
+            pointer-events: none;
         }
 
         .top-badge {
             display: inline-block;
             font-family: 'Courier Prime', monospace;
             font-size: 11px;
-            border: 1px solid var(--dark-color);
+            color: var(--neon-flame);
+            border: 1px solid var(--neon-flame);
             padding: 4px 14px;
-            background-color: var(--card-bg);
-            font-weight: bold;
-            margin-bottom: 15px;
+            border-radius: 0px;
+            margin-bottom: 25px;
+            background-color: rgba(66, 245, 178, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         h1 {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 800;
             line-height: 1.2;
+            margin-bottom: 35px;
             letter-spacing: -0.5px;
         }
         h1 span {
-            color: var(--ritual-green);
+            color: var(--neon-flame); /* الكلمة تضيء بالفوسفوري داخل المذبح */
+            text-shadow: 0 0 10px rgba(66, 245, 178, 0.3);
         }
 
-        /* حاوية الأفاتار والزخرفة الدائرية المتقاطعة المكثفة داخل المذبح */
-        .altar-core-grid {
-            background-color: #f1ebd9;
-            border: 2px solid var(--dark-color);
-            padding: 25px;
-            margin-bottom: 30px;
-            position: relative;
-            box-shadow: inset 0 0 15px rgba(8, 76, 51, 0.05);
-        }
-
+        /* مربع مستطيل داخلي للأفاتار بزخرفة الـ AI الحادة */
         .avatar-rect-box {
-            width: 210px;
-            height: 210px;
-            border: 2px solid var(--dark-color);
-            background-color: var(--card-bg);
-            margin: 0 auto;
+            width: 220px;
+            height: 220px;
+            border: 2px solid var(--neon-flame);
+            background-color: #0c3d2a;
+            margin: 0 auto 35px auto;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 5px 5px 0px var(--dark-color);
+            box-shadow: 6px 6px 0px var(--dark-color);
             overflow: hidden;
-            z-index: 2;
         }
 
-        /* شبكة زخارف دائرية ومقاطع متقاطعة تحاكي Altar العقد الذكي لـ Ritual */
-        .ritual-mesh-lines {
+        /* خطوط الهيكل الشبكي لـ Ritual الدائرية والمتقاطعة */
+        .ritual-grid-svg {
             position: absolute;
             width: 100%;
             height: 100%;
             top: 0;
             left: 0;
             pointer-events: none;
-            z-index: 1;
-            background: 
-                linear-gradient(to right, transparent 49.5%, rgba(8, 76, 51, 0.08) 50%, transparent 50.5%),
-                linear-gradient(to bottom, transparent 49.5%, rgba(8, 76, 51, 0.08) 50%, transparent 50.5%);
-        }
-        .mesh-circle-inner {
-            position: absolute;
-            width: 290px;
-            height: 290px;
-            border: 1px solid rgba(8, 76, 51, 0.12);
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .mesh-circle-outer {
-            position: absolute;
-            width: 360px;
-            height: 360px;
-            border: 1px dashed rgba(8, 76, 51, 0.15);
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
         }
 
         .avatar-svg {
-            width: 85px;
-            height: 85px;
-            opacity: 0.35;
+            width: 90px;
+            height: 90px;
+            stroke: var(--neon-flame);
+            opacity: 0.5;
             z-index: 2;
         }
 
@@ -269,33 +248,40 @@
             bottom: 0;
             width: 100%;
             background: var(--dark-color);
-            color: #ffffff;
+            color: var(--neon-flame);
             font-family: 'Courier Prime', monospace;
             font-size: 11px;
             padding: 5px 0;
             z-index: 4;
+            border-top: 1px solid var(--neon-flame);
         }
 
-        /* حقول الإدخال والتحكم */
+        /* خانة إدخال اليوزر المدمجة في المذبح */
         .input-block-zone {
             margin-bottom: 25px;
             text-align: left;
+            padding: 0 5px;
         }
         
         .input-label {
-            font-size: 12px;
-            font-weight: 800;
+            font-size: 11px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
+            letter-spacing: 1px;
             margin-bottom: 8px;
             display: block;
+            color: #c3ebd9;
         }
 
         .rect-input-container {
             display: flex;
-            background: #ffffff;
+            background: #062216;
             border: 2px solid var(--dark-color);
             box-shadow: 4px 4px 0px var(--dark-color);
+            transition: border-color 0.2s;
+        }
+        .rect-input-container:focus-within {
+            border-color: var(--neon-flame);
         }
 
         .rect-input-container input {
@@ -307,44 +293,47 @@
             font-size: 15px;
             font-weight: bold;
             outline: none;
-            color: var(--dark-color);
+            color: var(--neon-flame);
+        }
+        .rect-input-container input::placeholder {
+            color: #1b523b;
         }
 
-        /* حاوية زر الانبثاق الديناميكي للطبخ الرقمي */
+        /* زر المينت الذكي */
         .dynamic-mint-container {
             display: none;
             opacity: 0;
             transition: opacity 0.3s ease;
             margin-top: 15px;
+            padding: 0 5px;
         }
 
         .mint-submit-btn {
             width: 100%;
-            background-color: var(--dark-color);
-            color: #ffffff;
+            background-color: var(--neon-flame);
+            color: var(--dark-color);
             border: 2px solid var(--dark-color);
             padding: 16px;
-            font-size: 14px;
-            font-weight: 700;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px var(--dark-color);
+            transition: all 0.1s ease;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            cursor: pointer;
-            box-shadow: 4px 4px 0px var(--ritual-green);
-            transition: all 0.1s ease;
         }
         .mint-submit-btn:hover {
-            background-color: #222;
+            background-color: #2ed193;
             transform: translate(-1px, -1px);
-            box-shadow: 5px 5px 0px var(--ritual-green);
+            box-shadow: 5px 5px 0px var(--dark-color);
         }
 
         .status-logger {
             font-family: 'Courier Prime', monospace;
             font-size: 12px;
-            margin-top: 20px;
-            color: var(--ritual-green);
+            margin-top: 25px;
+            color: var(--neon-flame);
             font-weight: bold;
-            text-align: center;
         }
 
         footer {
@@ -359,22 +348,22 @@
 </head>
 <body>
 
-    <!-- النار المشتعلة الحرة الحيوية لليسر -->
-    <div class="green-flame-shrine flame-left">
-        <svg class="custom-flame-svg" viewBox="0 0 100 150">
+    <!-- النار المشتعلة الكبيرة والحيّـة على الجانب الأيسر للشاشة -->
+    <div class="wild-fire-shrine fire-left">
+        <svg class="wild-flame-svg" viewBox="0 0 100 150">
             <path d="M50,150 C75,150 90,125 90,95 C90,65 75,55 70,30 C65,50 55,55 50,10 C45,55 35,50 30,30 C25,55 10,65 10,95 C10,125 25,150 50,150 Z" />
         </svg>
-        <div class="flame-spark" style="animation-delay: 0.2s; left: 32px;"></div>
-        <div class="flame-spark" style="animation-delay: 0.9s; left: 48px;"></div>
+        <div class="ember-particle" style="animation-delay: 0.1s; left: 35px;"></div>
+        <div class="ember-particle" style="animation-delay: 0.7s; left: 55px;"></div>
     </div>
 
-    <!-- النار المشتعلة الحرة الحيوية لليمن -->
-    <div class="green-flame-shrine flame-right">
-        <svg class="custom-flame-svg" viewBox="0 0 100 150">
+    <!-- النار المشتعلة الكبيرة والحيّـة على الجانب الأيمن للشاشة -->
+    <div class="wild-fire-shrine fire-right">
+        <svg class="wild-flame-svg" viewBox="0 0 100 150">
             <path d="M50,150 C75,150 90,125 90,95 C90,65 75,55 70,30 C65,50 55,55 50,10 C45,55 35,50 30,30 C25,55 10,65 10,95 C10,125 25,150 50,150 Z" />
         </svg>
-        <div class="flame-spark" style="animation-delay: 0.5s; left: 35px;"></div>
-        <div class="flame-spark" style="animation-delay: 1.3s; left: 44px;"></div>
+        <div class="ember-particle" style="animation-delay: 0.4s; left: 25px;"></div>
+        <div class="ember-particle" style="animation-delay: 1.2s; left: 45px;"></div>
     </div>
 
     <header>
@@ -385,33 +374,35 @@
         <button class="wallet-pill-btn" id="walletPillBtn" onclick="connectWallet()">Connect Wallet</button>
     </header>
 
-    <!-- الهيكل الجديد الكامل للمذبح الرقمي (Altar Structure) بدلاً من الكارد العادي القديم -->
-    <div class="altar-structure-container">
-        <div class="altar-corner-decor tl"></div>
-        <div class="altar-corner-decor tr"></div>
-        <div class="altar-corner-decor bl"></div>
-        <div class="altar-corner-decor br"></div>
+    <!-- واجهة المذبح الطقوسية الجديدة كلياً (Ritual Altar Box) البديلة للكارد القديم -->
+    <div class="ritual-altar-card">
+        <!-- الزخرفة والإطارات الطقوسية الداخلية المضيئة -->
+        <div class="altar-inner-border"></div>
+        <div class="altar-corner-decor corner-tl"></div>
+        <div class="altar-corner-decor corner-tr"></div>
+        <div class="altar-corner-decor corner-bl"></div>
+        <div class="altar-corner-decor corner-br"></div>
 
-        <div class="altar-header-zone">
-            <div class="top-badge">Ritual Chain · Testnet 1979</div>
-            <h1>Generate AI <span>Identity</span></h1>
-        </div>
+        <div class="top-badge">Ritual Network · Node Altar</div>
+        
+        <h1>Generate AI <span>Identity</span></h1>
 
-        <!-- المنطقة المركزية المحاطة بزخرفة مصفوفات ومحاور ريتشوال المستديرة المتطورة -->
-        <div class="altar-core-grid">
-            <div class="ritual-mesh-lines">
-                <div class="mesh-circle-inner"></div>
-                <div class="mesh-circle-outer"></div>
-            </div>
-
-            <div class="avatar-rect-box">
-                <svg class="avatar-svg" id="defaultAvatarSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <img src="" id="generatedAvatarImg" class="avatar-img" alt="Ritual Identity">
-                <div class="rect-tag" id="rectUserTag">@username</div>
-            </div>
+        <!-- حاوية الأفاتار المعززة بالزخرفة الهندسية المتقاطعة للذكاء الاصطناعي -->
+        <div class="avatar-rect-box">
+            <svg class="ritual-grid-svg" viewBox="0 0 100 100">
+                <!-- دوائر وخطوط متقاطعة تعبر عن النودز والطقوس الرقمية -->
+                <circle cx="50" cy="50" r="42" stroke="rgba(66, 245, 178, 0.15)" stroke-width="1" fill="none" stroke-dasharray="3,3"/>
+                <circle cx="50" cy="50" r="30" stroke="rgba(66, 245, 178, 0.2)" stroke-width="1" fill="none"/>
+                <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(66, 245, 178, 0.1)" stroke-width="1"/>
+                <line x1="50" y1="0" x2="50" y2="100" stroke="rgba(66, 245, 178, 0.1)" stroke-width="1"/>
+            </svg>
+            
+            <svg class="avatar-svg" id="defaultAvatarSvg" viewBox="0 0 24 24" fill="none" stroke-width="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="7" r="4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <img src="" id="generatedAvatarImg" class="avatar-img" alt="Ritual Identity">
+            <div class="rect-tag" id="rectUserTag">@username</div>
         </div>
 
         <div class="input-block-zone">
@@ -421,7 +412,7 @@
             </div>
         </div>
 
-        <!-- زر المينت التفاعلي للمذبح -->
+        <!-- زر المينت الديناميكي الفسفوري الجديد المتناسق مع المذبح -->
         <div class="dynamic-mint-container" id="mintContainer">
             <button class="mint-submit-btn" id="bottomActionBtn" onclick="triggerInference()">
                 Connect Wallet To Mint →
